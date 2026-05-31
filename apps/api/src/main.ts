@@ -46,11 +46,14 @@ async function bootstrap() {
     .split(',')
     .map((o) => o.trim());
 
+  const corsWildcard = allowedOrigins.includes('*');
   app.enableCors({
-    origin: (origin, cb) => {
-      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-      cb(new Error(`CORS: origin ${origin} not allowed`));
-    },
+    origin: corsWildcard
+      ? true                           // allow any origin
+      : (origin, cb) => {
+          if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
+          cb(new Error(`CORS: origin ${origin} not allowed`));
+        },
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
