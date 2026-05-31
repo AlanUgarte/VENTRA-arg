@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # ── API: lint + build + test ───────────────────────────────────────────────
+  test-api:
+    name: API — Build & Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: almacen
+          POSTGRES_PASSWORD: almacen_test
+          POSTGRES_DB: almacen_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://almacen:almacen_test@localhost:5432/almacen_test
+      JWT_SECRET: test_jwt_secret_must_be_32_characters_long
+      JWT_REFRESH_SECRET: test_refresh_must_also_be_32_chars!!
+      JWT_EXPIRES_IN: 15m
+      JWT_REFRESH_EXPIRES_IN: 7d
+      NODE_ENV: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Run DB migrations
+        run: npx prisma migrate deploy
+
+      - name: Build API
+        run: npm run build:api
+
+      - name: Run tests
+        run: npm test --workspace=apps/api -- --passWithNoTests --forceExit
+
+  # ── Web: lint + build ─────────────────────────────────────────────────────
+  build-web:
+    name: Web — Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web
+        run: npm run build:web
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:4000/api
+          NEXT_TELEMETRY_DISABLED: 1
+
+  # ── Docker build check (solo en main) ─────────────────────────────────────
+  docker-check:
+    name: Docker — Build check
+    runs-on: ubuntu-latest
+    needs: [test-api, build-web]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build API image
+        run: |
+          docker build \
+            -f docker/Dockerfile.api \
+            --target production \
+            -t almacen-api:${{ github.sha }} .
+
+      - name: Build Web image
+        run: |
+          docker build \
+            -f docker/Dockerfile.web \
+            --build-arg NEXT_PUBLIC_API_URL=https://placeholder.com/api \
+            -t almacen-web:${{ github.sha }} .

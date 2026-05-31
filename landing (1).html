@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Almacén · El sistema para tu kiosco</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Hanken+Grotesk:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1a1c1a; --ink-soft:#5d6b5f; --paper:#fbf8f1; --cream:#f4eee1; --card:#ffffff;
+    --primary:#0d9f6e; --primary-d:#0a7e57; --primary-soft:#e2f4ec; --accent:#f0653e; --accent-soft:#fdeae3;
+    --gold:#e3a92c; --line:#e7e0d2; --violet:#7c5cff;
+    --shadow:0 2px 6px rgba(26,28,26,.05),0 14px 40px rgba(26,28,26,.07);
+    --shadow-lg:0 30px 70px rgba(26,28,26,.16);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{font-family:'Hanken Grotesk',sans-serif;color:var(--ink);background:var(--paper);line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  .mono{font-family:'IBM Plex Mono',monospace}
+  a{color:inherit;text-decoration:none}
+  .wrap{width:100%;max-width:1180px;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
+  .serif{font-family:'Fraunces',serif}
+  section{position:relative}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:50;background:rgba(251,248,241,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px}
+  .brand .mk{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--primary),#12c98a);display:grid;place-items:center;color:#053b2b;font-weight:900;font-size:19px;box-shadow:0 6px 14px rgba(13,159,110,.35)}
+  .nav-links{display:flex;align-items:center;gap:30px}
+  .nav-links a{font-size:14.5px;font-weight:600;color:var(--ink-soft);transition:.15s}.nav-links a:hover{color:var(--ink)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;cursor:pointer;border:none;border-radius:12px;transition:.16s;font-size:15px;font-family:inherit}
+  .btn-prim{background:var(--primary);color:#fff;padding:11px 20px;box-shadow:0 8px 20px rgba(13,159,110,.28)}
+  .btn-prim:hover{background:var(--primary-d);transform:translateY(-1px);box-shadow:0 12px 26px rgba(13,159,110,.34)}
+  .btn-ghost{background:#fff;color:var(--ink);padding:11px 20px;border:1.5px solid var(--line)}.btn-ghost:hover{border-color:var(--ink)}
+  .btn-lg{padding:15px 28px;font-size:16.5px;border-radius:14px}
+  .nav-toggle{display:none;background:none;border:none;cursor:pointer}.nav-toggle svg{width:26px;height:26px;stroke:var(--ink);fill:none;stroke-width:2}
+
+  /* HERO */
+  .hero{padding:clamp(50px,8vw,96px) 0 clamp(40px,6vw,70px);position:relative}
+  .hero::before{content:"";position:absolute;inset:0;z-index:-1;background:
+    radial-gradient(60% 50% at 78% 8%,rgba(13,159,110,.16),transparent 60%),
+    radial-gradient(46% 44% at 8% 86%,rgba(240,101,62,.13),transparent 60%),
+    radial-gradient(40% 40% at 92% 92%,rgba(227,169,44,.12),transparent 60%)}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(30px,5vw,60px);align-items:center}
+  .badge-pill{display:inline-flex;align-items:center;gap:8px;background:var(--primary-soft);color:var(--primary-d);font-weight:700;font-size:13px;padding:7px 14px;border-radius:30px;border:1px solid #bfe8d6}
+  .badge-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--primary);box-shadow:0 0 0 3px rgba(13,159,110,.25)}
+  h1.hero-t{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(38px,6.2vw,68px);line-height:1.02;letter-spacing:-.02em;margin:20px 0 18px}
+  h1.hero-t em{font-style:italic;color:var(--primary)}
+  .hero-sub{font-size:clamp(16px,2.2vw,19px);color:var(--ink-soft);max-width:520px;margin-bottom:28px}
+  .hero-ctas{display:flex;gap:13px;flex-wrap:wrap;align-items:center}
+  .hero-trust{display:flex;gap:20px;flex-wrap:wrap;margin-top:26px;color:var(--ink-soft);font-size:13.5px;font-weight:600}
+  .hero-trust span{display:flex;align-items:center;gap:7px}.hero-trust svg{width:17px;height:17px;stroke:var(--primary);fill:none;stroke-width:2.2}
+
+  /* MOCKUP */
+  .mock{background:#fff;border-radius:18px;box-shadow:var(--shadow-lg);border:1px solid var(--line);overflow:hidden;transform:rotate(.6deg)}
+  .mock-bar{height:38px;background:#11161d;display:flex;align-items:center;gap:7px;padding:0 14px}
+  .mock-bar i{width:11px;height:11px;border-radius:50%;display:block}.mock-bar i:nth-child(1){background:#ff5f57}.mock-bar i:nth-child(2){background:#febc2e}.mock-bar i:nth-child(3){background:#28c840}
+  .mock-bar span{margin-left:10px;color:#8a93a3;font-size:11px;font-family:'IBM Plex Mono'}
+  .mock-body{display:flex}
+  .mock-side{width:54px;background:#11161d;padding:14px 0;display:flex;flex-direction:column;gap:14px;align-items:center}
+  .mock-side i{width:24px;height:24px;border-radius:7px;background:rgba(255,255,255,.08)}.mock-side i.on{background:var(--primary)}
+  .mock-main{flex:1;padding:16px;background:#f3f5f8}
+  .mk-kpis{display:flex;gap:8px;margin-bottom:12px}
+  .mk-kpi{flex:1;background:#fff;border:1px solid #e6eaf0;border-radius:10px;padding:9px}
+  .mk-kpi b{font-size:9px;color:#8a93a3;text-transform:uppercase;letter-spacing:.04em}
+  .mk-kpi .v{font-family:'IBM Plex Mono';font-weight:600;font-size:15px;margin-top:2px}
+  .mk-kpi.g .v{color:var(--primary-d)}.mk-kpi.o .v{color:var(--accent)}
+  .mk-prods{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .mk-prod{background:#fff;border:1px solid #e6eaf0;border-radius:9px;padding:9px}
+  .mk-prod .r{font-size:8px;color:var(--primary-d);background:var(--primary-soft);display:inline-block;padding:2px 6px;border-radius:10px;font-weight:700}
+  .mk-prod .n{font-size:11px;font-weight:700;margin:6px 0 3px}
+  .mk-prod .p{font-family:'IBM Plex Mono';font-weight:600;font-size:13px}
+  .mk-prod .add{margin-top:6px;height:18px;border-radius:5px;background:#11161d}
+  .float-card{position:absolute;background:#fff;border-radius:13px;box-shadow:var(--shadow-lg);border:1px solid var(--line);padding:12px 15px;font-size:12.5px;font-weight:600}
+  .fc-1{bottom:-22px;left:-26px;display:flex;align-items:center;gap:10px}
+  .fc-1 .ic{width:34px;height:34px;border-radius:9px;background:var(--primary-soft);display:grid;place-items:center}.fc-1 .ic svg{width:18px;height:18px;stroke:var(--primary-d);fill:none;stroke-width:2.2}
+  .fc-1 .v{font-family:'IBM Plex Mono';font-size:15px;color:var(--primary-d)}
+  .fc-2{top:-20px;right:-18px;background:var(--ink);color:#fff;display:flex;align-items:center;gap:8px}
+  .fc-2 .d{width:8px;height:8px;border-radius:50%;background:#28c840;box-shadow:0 0 0 3px rgba(40,200,64,.3)}
+
+  /* SECTION HEADERS */
+  .sec{padding:clamp(48px,7vw,84px) 0}
+  .sec-head{text-align:center;max-width:640px;margin:0 auto clamp(34px,5vw,52px)}
+  .eyebrow{font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+  .sec-head h2{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(28px,4.2vw,44px);line-height:1.08;letter-spacing:-.02em;margin:12px 0 14px}
+  .sec-head p{font-size:clamp(15px,2vw,17.5px);color:var(--ink-soft)}
+
+  /* FEATURES */
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .feat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:var(--shadow);transition:.18s}
+  .feat:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:#d8d0bf}
+  .feat .fic{width:50px;height:50px;border-radius:14px;display:grid;place-items:center;margin-bottom:16px}
+  .feat .fic svg{width:25px;height:25px;stroke-width:2;fill:none}
+  .feat h3{font-size:18px;font-weight:800;margin-bottom:8px;letter-spacing:-.01em}
+  .feat p{font-size:14.5px;color:var(--ink-soft)}
+
+  /* MULTIUSER BAND */
+  .band{background:linear-gradient(135deg,#0e1a16,#10261d);color:#fff;border-radius:26px;padding:clamp(34px,5vw,58px);position:relative;overflow:hidden}
+  .band::after{content:"";position:absolute;inset:0;background:radial-gradient(50% 80% at 85% 20%,rgba(13,159,110,.4),transparent 60%),radial-gradient(40% 70% at 10% 90%,rgba(124,92,255,.28),transparent 60%);pointer-events:none}
+  .band-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;position:relative;z-index:1}
+  .band h2{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(26px,3.6vw,40px);line-height:1.1;margin-bottom:16px}
+  .band p{color:#bfd3c9;font-size:16px;max-width:440px}
+  .band-list{list-style:none;margin-top:22px;display:flex;flex-direction:column;gap:12px}
+  .band-list li{display:flex;gap:11px;align-items:flex-start;font-size:15px;color:#e7efe9}
+  .band-list .ck{flex-shrink:0;width:22px;height:22px;border-radius:7px;background:var(--primary);display:grid;place-items:center;margin-top:1px}.band-list .ck svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3}
+  .users-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:22px;backdrop-filter:blur(6px)}
+  .user-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+  .user-row:last-child{border-bottom:none}
+  .av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;font-size:15px;flex-shrink:0}
+  .user-row .meta{flex:1}.user-row .meta b{font-size:14.5px}.user-row .meta small{display:block;color:#9fb3a8;font-size:12px}
+  .user-row .st{font-size:11px;font-weight:700;color:#28c840;display:flex;align-items:center;gap:5px}.user-row .st .d{width:7px;height:7px;border-radius:50%;background:#28c840}
+
+  /* PRICING */
+  .price-wrap{display:flex;justify-content:center}
+  .price{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow-lg);max-width:430px;width:100%;overflow:hidden;position:relative}
+  .price-top{background:linear-gradient(135deg,var(--primary),#12c98a);padding:30px 32px 26px;color:#fff;position:relative;overflow:hidden}
+  .price-top::after{content:"";position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.12)}
+  .price-tag{display:inline-block;background:rgba(255,255,255,.2);font-weight:700;font-size:12.5px;padding:5px 13px;border-radius:20px;margin-bottom:14px}
+  .price-amt{display:flex;align-items:baseline;gap:6px}
+  .price-amt .cur{font-size:24px;font-weight:700}.price-amt .num{font-family:'Fraunces',serif;font-weight:900;font-size:clamp(46px,7vw,62px);line-height:1}
+  .price-amt .per{font-size:16px;opacity:.9;font-weight:600}
+  .price-top .sub{margin-top:6px;opacity:.92;font-size:14px}
+  .price-body{padding:26px 32px 30px}
+  .price-feats{list-style:none;display:flex;flex-direction:column;gap:13px;margin-bottom:24px}
+  .price-feats li{display:flex;gap:11px;font-size:14.5px;font-weight:500}
+  .price-feats .ck{flex-shrink:0;width:21px;height:21px;border-radius:50%;background:var(--primary-soft);display:grid;place-items:center}.price-feats .ck svg{width:12px;height:12px;stroke:var(--primary-d);fill:none;stroke-width:3}
+  .price .trial-note{text-align:center;font-size:13px;color:var(--ink-soft);margin-top:14px}
+
+  /* FAQ */
+  .faq-grid{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+  .faq{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .faq button{width:100%;text-align:left;background:none;border:none;padding:18px 22px;font-size:16px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:14px;font-family:inherit;color:var(--ink)}
+  .faq button .pm{font-size:22px;color:var(--primary);transition:.2s;flex-shrink:0}
+  .faq.open button .pm{transform:rotate(45deg)}
+  .faq .ans{max-height:0;overflow:hidden;transition:max-height .25s;color:var(--ink-soft);font-size:14.5px}
+  .faq.open .ans{max-height:240px}
+  .faq .ans p{padding:0 22px 20px}
+
+  /* FINAL CTA */
+  .final{text-align:center;background:var(--cream);border-radius:26px;padding:clamp(40px,6vw,70px) clamp(20px,4vw,40px)}
+  .final h2{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(28px,4.5vw,46px);line-height:1.05;margin-bottom:14px}
+  .final p{color:var(--ink-soft);font-size:17px;max-width:480px;margin:0 auto 26px}
+
+  footer{border-top:1px solid var(--line);padding:36px 0;margin-top:40px}
+  .foot-in{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;color:var(--ink-soft);font-size:13.5px}
+
+  /* MODAL */
+  .ov{position:fixed;inset:0;background:rgba(20,24,20,.55);backdrop-filter:blur(4px);z-index:90;display:none;align-items:center;justify-content:center;padding:18px}
+  .ov.show{display:flex}
+  .md{background:var(--card);border-radius:22px;box-shadow:var(--shadow-lg);max-width:440px;width:100%;max-height:92vh;overflow-y:auto}
+  .md-h{padding:24px 26px 6px;text-align:center}
+  .md-h .mk{width:46px;height:46px;border-radius:13px;background:linear-gradient(135deg,var(--primary),#12c98a);display:grid;place-items:center;color:#053b2b;font-weight:900;font-size:23px;margin:0 auto 14px}
+  .md-h h3{font-family:'Fraunces',serif;font-weight:700;font-size:25px}
+  .md-h p{color:var(--ink-soft);font-size:14px;margin-top:5px}
+  .md-b{padding:18px 26px 26px}
+  .fld{margin-bottom:13px}.fld label{display:block;font-size:12.5px;font-weight:700;color:var(--ink-soft);margin-bottom:6px}
+  .fld input{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:11px;font-size:15px;background:var(--paper);font-family:inherit}
+  .fld input:focus{outline:none;border-color:var(--primary);background:#fff;box-shadow:0 0 0 3px var(--primary-soft)}
+  .md-foot{text-align:center;font-size:13.5px;color:var(--ink-soft);margin-top:14px}.md-foot a{color:var(--primary-d);font-weight:700;cursor:pointer}
+  .ok-box{text-align:center}
+  .ok-box .big{width:66px;height:66px;border-radius:50%;background:var(--primary-soft);display:grid;place-items:center;margin:6px auto 16px}.ok-box .big svg{width:34px;height:34px;stroke:var(--primary-d);fill:none;stroke-width:2.5}
+  .trial-chip{display:inline-block;background:var(--gold);color:#3a2a00;font-weight:800;font-size:13px;padding:7px 16px;border-radius:30px;margin:10px 0 4px}
+  .err{background:var(--accent-soft);color:#b53a1a;font-size:13px;padding:9px 13px;border-radius:10px;margin-bottom:12px;display:none}
+  .x{position:absolute;top:16px;right:18px;background:none;border:none;font-size:24px;color:var(--ink-soft);cursor:pointer;line-height:1}
+
+  @media(max-width:900px){
+    .hero-grid{grid-template-columns:1fr;gap:54px}.mock{transform:none;max-width:480px;margin:0 auto}
+    .band-grid{grid-template-columns:1fr;gap:30px}.feat-grid{grid-template-columns:1fr 1fr}
+    .nav-links{position:fixed;top:66px;left:0;right:0;background:var(--paper);border-bottom:1px solid var(--line);flex-direction:column;gap:0;padding:8px 0;display:none;box-shadow:var(--shadow)}
+    .nav-links.open{display:flex}.nav-links a{padding:13px 26px;width:100%}.nav-links .btn{margin:8px 22px;width:calc(100% - 44px)}
+    .nav-toggle{display:block}
+  }
+  @media(max-width:560px){
+    .feat-grid{grid-template-columns:1fr}.hero-ctas .btn{width:100%}
+    .foot-in{flex-direction:column;text-align:center}
+    .float-card{display:none}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-in">
+    <div class="brand"><span class="mk">A</span>Almacén</div>
+    <div class="nav-links" id="navLinks">
+      <a href="#funciones" onclick="closeNav()">Funciones</a>
+      <a href="#multiusuario" onclick="closeNav()">Multiusuario</a>
+      <a href="#precio" onclick="closeNav()">Precio</a>
+      <a href="#faq" onclick="closeNav()">Preguntas</a>
+      <button class="btn btn-prim" onclick="openSignup();closeNav()">Probar gratis</button>
+    </div>
+    <button class="nav-toggle" onclick="toggleNav()"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero"><div class="wrap hero-grid">
+  <div>
+    <span class="badge-pill"><span class="dot"></span>Hecho para kioscos y almacenes de barrio</span>
+    <h1 class="hero-t">Tu kiosco, <em>ordenado</em> y bajo control.</h1>
+    <p class="hero-sub">Cargá tus productos, cobrá en segundos con ticket y comprobante, llevá el stock, los fiados de tus clientes y los pagos a proveedores. Todo desde la compu o el celular.</p>
+    <div class="hero-ctas">
+      <button class="btn btn-prim btn-lg" onclick="openSignup()">Probar gratis 3 días</button>
+      <a class="btn btn-ghost btn-lg" href="almacen-pos.html" target="_blank" rel="noopener">Ver la demo →</a>
+    </div>
+    <div class="hero-trust">
+      <span><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Sin instalar nada</span>
+      <span><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>Funciona en el celular</span>
+      <span><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>3 días gratis</span>
+    </div>
+  </div>
+  <div style="position:relative">
+    <div class="mock">
+      <div class="mock-bar"><i></i><i></i><i></i><span>almacen · punto de venta</span></div>
+      <div class="mock-body">
+        <div class="mock-side"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+        <div class="mock-main">
+          <div class="mk-kpis">
+            <div class="mk-kpi"><b>Facturado</b><div class="v">$84.300</div></div>
+            <div class="mk-kpi g"><b>Ganancia</b><div class="v">$25.100</div></div>
+            <div class="mk-kpi o"><b>Por cobrar</b><div class="v">$4.745</div></div>
+          </div>
+          <div class="mk-prods">
+            <div class="mk-prod"><span class="r">Galletitas</span><div class="n">Surtidas</div><div class="p">$2.465</div><div class="add"></div></div>
+            <div class="mk-prod"><span class="r">Bebidas</span><div class="n">Gaseosa 2,25L</div><div class="p">$3.780</div><div class="add"></div></div>
+            <div class="mk-prod"><span class="r">Alimentos</span><div class="n">Leche 1L</div><div class="p">$1.250</div><div class="add"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="float-card fc-1"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8M21 7v6h-6"/></svg></div><div>Ganancia neta<br><span class="v">+$25.100</span></div></div>
+    <div class="float-card fc-2"><span class="d"></span>3 cajas conectadas</div>
+  </div>
+</div></section>
+
+<!-- FEATURES -->
+<section class="sec" id="funciones"><div class="wrap">
+  <div class="sec-head">
+    <span class="eyebrow">Todo en un solo lugar</span>
+    <h2 class="serif">Lo que podés hacer</h2>
+    <p>Pensado para el día a día del mostrador: rápido para cobrar y completo para que no se te escape ningún número.</p>
+  </div>
+  <div class="feat-grid">
+    <div class="feat"><div class="fic" style="background:var(--primary-soft)"><svg stroke="var(--primary-d)" viewBox="0 0 24 24"><path d="M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L21 7H6"/><circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/></svg></div>
+      <h3>Caja con ticket</h3><p>Sumás los productos al ticket del cliente, aplicás descuento y generás la venta. El stock se descuenta solo.</p></div>
+    <div class="feat"><div class="fic" style="background:var(--accent-soft)"><svg stroke="var(--accent)" viewBox="0 0 24 24"><path d="M4 4h16v13H4z"/><path d="M8 21h8M9 8h6M9 12h4"/></svg></div>
+      <h3>Comprobante en imagen</h3><p>Cada venta genera un comprobante que descargás o compartís por WhatsApp. Lo abre cualquiera, desde el celu o la PC.</p></div>
+    <div class="feat"><div class="fic" style="background:#fdf2d8"><svg stroke="#9a6c00" viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg></div>
+      <h3>Inventario y stock</h3><p>Cargás artículos por rubro con costo, descuento y ganancia. Editás precios cuando querés y controlás lo que queda.</p></div>
+    <div class="feat"><div class="fic" style="background:var(--primary-soft)"><svg stroke="var(--violet)" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><path d="M17 8h4M19 6v4"/></svg></div>
+      <h3>Clientes y fiados</h3><p>Llevás la cuenta de quién te debe, buscás por nombre y si cambiás un precio, la deuda se ajusta al valor de hoy.</p></div>
+    <div class="feat"><div class="fic" style="background:#e8f0fe"><svg stroke="var(--violet)" viewBox="0 0 24 24"><path d="M3 6h13v9H3zM16 9h3l2 3v3h-5z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg></div>
+      <h3>Pago a proveedores</h3><p>Cargás facturas con su condición y vencimiento, anotás cada pago (efectivo, transferencia, etc.) y ves el saldo en cuenta corriente.</p></div>
+    <div class="feat"><div class="fic" style="background:#e0f7fb"><svg stroke="#06b6d4" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 14l3-3 3 3 5-6"/></svg></div>
+      <h3>Reportes y gráficos</h3><p>Mirás cuánto facturaste, tu ganancia neta y qué productos tienen más rotación, con gráficos claros.</p></div>
+  </div>
+</div></section>
+
+<!-- MULTIUSUARIO -->
+<section class="sec" id="multiusuario" style="padding-top:0"><div class="wrap">
+  <div class="band"><div class="band-grid">
+    <div>
+      <h2 class="serif">Varios usuarios, al mismo tiempo</h2>
+      <p>Vos en el mostrador, tu empleado en la otra caja y vos mirando los números desde casa. Todos conectados a la vez.</p>
+      <ul class="band-list">
+        <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>Creás un usuario para cada persona del local</li>
+        <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>Acceso simultáneo desde varias cajas o dispositivos</li>
+        <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>Cada uno entra con su propio usuario y contraseña</li>
+        <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>Se ve igual de bien en compu, tablet y celular</li>
+      </ul>
+    </div>
+    <div class="users-card">
+      <div style="font-size:12px;color:#9fb3a8;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Conectados ahora</div>
+      <div class="user-row"><div class="av" style="background:#0d9f6e">M</div><div class="meta"><b>Mostrador 1</b><small>Caja principal</small></div><div class="st"><span class="d"></span>En línea</div></div>
+      <div class="user-row"><div class="av" style="background:#f0653e">C</div><div class="meta"><b>Caja 2</b><small>Empleado</small></div><div class="st"><span class="d"></span>En línea</div></div>
+      <div class="user-row"><div class="av" style="background:#7c5cff">D</div><div class="meta"><b>Dueño</b><small>Desde el celular</small></div><div class="st"><span class="d"></span>En línea</div></div>
+    </div>
+  </div></div>
+</div></section>
+
+<!-- PRICING -->
+<section class="sec" id="precio"><div class="wrap">
+  <div class="sec-head">
+    <span class="eyebrow">Precio simple</span>
+    <h2 class="serif">Un solo plan, todo incluido</h2>
+    <p>Sin letra chica. Probás 3 días gratis y si te sirve, seguís.</p>
+  </div>
+  <div class="price-wrap">
+    <div class="price">
+      <div class="price-top">
+        <span class="price-tag">PLAN COMPLETO</span>
+        <div class="price-amt"><span class="cur">$</span><span class="num">30.000</span><span class="per">/ mes</span></div>
+        <div class="sub">Todas las funciones · usuarios ilimitados</div>
+      </div>
+      <div class="price-body">
+        <ul class="price-feats">
+          <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>Punto de venta con ticket y comprobante</li>
+          <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>Inventario, control de stock y precios</li>
+          <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>Clientes, fiados y cuenta corriente</li>
+          <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>Proveedores con varios medios de pago</li>
+          <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>Reportes, gráficos y respaldos</li>
+          <li><span class="ck"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>Multiusuario con acceso simultáneo</li>
+        </ul>
+        <button class="btn btn-prim btn-lg" style="width:100%" onclick="openSignup()">Empezar prueba gratis</button>
+        <div class="trial-note">3 días gratis · no pedimos tarjeta para probar</div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- FAQ -->
+<section class="sec" id="faq" style="padding-top:0"><div class="wrap">
+  <div class="sec-head"><span class="eyebrow">Dudas</span><h2 class="serif">Preguntas frecuentes</h2></div>
+  <div class="faq-grid">
+    <div class="faq"><button onclick="toggleFaq(this)">¿Necesito instalar algo?<span class="pm">+</span></button><div class="ans"><p>No. Funciona desde el navegador en cualquier compu, tablet o celular. Solo entrás con tu usuario.</p></div></div>
+    <div class="faq"><button onclick="toggleFaq(this)">¿Puede usarlo más de una persona a la vez?<span class="pm">+</span></button><div class="ans"><p>Sí. Creás un usuario por persona y todos pueden trabajar al mismo tiempo desde distintos dispositivos: una caja, otra caja y vos mirando reportes desde el celu.</p></div></div>
+    <div class="faq"><button onclick="toggleFaq(this)">Si cambio un precio, ¿se actualiza lo que me deben?<span class="pm">+</span></button><div class="ans"><p>Exacto. Los fiados se calculan al precio del día, así que si subiste el precio de la leche, la deuda del cliente queda al valor actualizado.</p></div></div>
+    <div class="faq"><button onclick="toggleFaq(this)">¿Cómo es la prueba gratis?<span class="pm">+</span></button><div class="ans"><p>Creás tu usuario y tenés 3 días para usar todo sin límites. Si te sirve, continuás con el plan de $30.000 por mes.</p></div></div>
+  </div>
+</div></section>
+
+<!-- FINAL CTA -->
+<section class="sec" style="padding-top:0"><div class="wrap">
+  <div class="final">
+    <h2 class="serif">Empezá a ordenar tu kiosco hoy</h2>
+    <p>Probalo 3 días gratis. En cinco minutos ya estás cobrando con el ticket y viendo tu ganancia.</p>
+    <div class="hero-ctas" style="justify-content:center">
+      <button class="btn btn-prim btn-lg" onclick="openSignup()">Crear mi usuario gratis</button>
+      <a class="btn btn-ghost btn-lg" href="almacen-pos.html" target="_blank" rel="noopener">Ver la demo</a>
+    </div>
+  </div>
+</div></section>
+
+<footer><div class="wrap foot-in">
+  <div class="brand" style="font-size:17px"><span class="mk" style="width:30px;height:30px;font-size:16px">A</span>Almacén</div>
+  <div>Sistema de gestión para kioscos y almacenes · Hecho en Argentina 🇦🇷</div>
+</div></footer>
+
+<!-- MODAL -->
+<div class="ov" id="ov" onclick="if(event.target===this)closeM()"><div class="md" id="md" style="position:relative"></div></div>
+
+<script>
+// ---------- almacenamiento seguro (persiste si se abre como archivo local) ----------
+const store={
+  get(){try{return JSON.parse(localStorage.getItem('almacen_users')||'[]')}catch(e){return mem}},
+  set(v){mem=v;try{localStorage.setItem('almacen_users',JSON.stringify(v))}catch(e){}}
+};
+let mem=[];
+
+// ---------- NAV ----------
+function toggleNav(){document.getElementById('navLinks').classList.toggle('open')}
+function closeNav(){document.getElementById('navLinks').classList.remove('open')}
+function toggleFaq(b){b.parentElement.classList.toggle('open')}
+
+// ---------- MODAL ----------
+function openM(){document.getElementById('ov').classList.add('show')}
+function closeM(){document.getElementById('ov').classList.remove('show')}
+function setM(h){document.getElementById('md').innerHTML='<button class="x" onclick="closeM()">✕</button>'+h}
+
+function openSignup(){
+  const users=store.get();
+  setM(`<div class="md-h"><div class="mk">A</div><h3>Probá gratis 3 días</h3><p>Creá tu usuario y entrá al sistema al toque.</p></div>
+  <div class="md-b">
+    <div class="err" id="err"></div>
+    <div class="fld"><label>Tu nombre</label><input id="s_nom" placeholder="Nombre y apellido"></div>
+    <div class="fld"><label>Nombre del kiosco</label><input id="s_neg" placeholder="Ej: Kiosco La Esquina"></div>
+    <div class="fld"><label>Email</label><input id="s_mail" type="email" placeholder="tucorreo@email.com"></div>
+    <div class="fld"><label>Contraseña</label><input id="s_pass" type="password" placeholder="Mínimo 4 caracteres"></div>
+    <button class="btn btn-prim btn-lg" style="width:100%" onclick="doSignup()">Crear usuario y empezar</button>
+    <div class="md-foot">¿Ya tenés cuenta? <a onclick="openLogin()">Iniciá sesión</a>${users.length?` · <span style="color:var(--ink-soft)">${users.length} usuario(s) registrado(s)</span>`:''}</div>
+  </div>`);openM();
+}
+function doSignup(){
+  const nom=val('s_nom'),neg=val('s_neg'),mail=val('s_mail').toLowerCase(),pass=val('s_pass');
+  if(!nom||!neg||!mail||!pass)return showErr('Completá todos los campos');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail))return showErr('El email no parece válido');
+  if(pass.length<4)return showErr('La contraseña debe tener al menos 4 caracteres');
+  const users=store.get();
+  if(users.some(u=>u.mail===mail))return showErr('Ya existe un usuario con ese email. Iniciá sesión.');
+  const now=Date.now();const u={nom,neg,mail,pass,start:now,end:now+3*86400000};
+  users.push(u);store.set(users);showSuccess(u);
+}
+function openLogin(){
+  setM(`<div class="md-h"><div class="mk">A</div><h3>Iniciar sesión</h3><p>Entrá con tu usuario para seguir trabajando.</p></div>
+  <div class="md-b">
+    <div class="err" id="err"></div>
+    <div class="fld"><label>Email</label><input id="l_mail" type="email" placeholder="tucorreo@email.com"></div>
+    <div class="fld"><label>Contraseña</label><input id="l_pass" type="password" placeholder="Tu contraseña"></div>
+    <button class="btn btn-prim btn-lg" style="width:100%" onclick="doLogin()">Entrar</button>
+    <div class="md-foot">¿No tenés cuenta? <a onclick="openSignup()">Creá una gratis</a></div>
+  </div>`);openM();
+}
+function doLogin(){
+  const mail=val('l_mail').toLowerCase(),pass=val('l_pass');
+  const u=store.get().find(x=>x.mail===mail&&x.pass===pass);
+  if(!u)return showErr('Email o contraseña incorrectos');
+  showSuccess(u);
+}
+function showSuccess(u){
+  const dias=Math.max(0,Math.ceil((u.end-Date.now())/86400000));
+  setM(`<div class="md-h"><div class="ok-box"><div class="big"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div></div>
+    <h3>¡Bienvenido, ${esc(u.nom.split(' ')[0])}!</h3><p>Tu usuario de <b>${esc(u.neg)}</b> está listo.</p></div>
+  <div class="md-b" style="text-align:center">
+    <div class="trial-chip">⏳ Te quedan ${dias} día(s) de prueba</div>
+    <p style="font-size:13.5px;color:var(--ink-soft);margin:8px 0 18px">Entrás al sistema completo. Cargá tus productos y empezá a cobrar.</p>
+    <a class="btn btn-prim btn-lg" style="width:100%" href="almacen-pos.html" target="_blank" rel="noopener" onclick="closeM()">Entrar al sistema →</a>
+    <div class="md-foot">Podés abrirlo en otra compu o celular con el mismo usuario.</div>
+  </div>`);openM();
+}
+function val(id){return (document.getElementById(id).value||'').trim()}
+function showErr(m){const e=document.getElementById('err');if(e){e.textContent=m;e.style.display='block'}}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+mem=store.get();
+</script>
+</body>
+</html>
