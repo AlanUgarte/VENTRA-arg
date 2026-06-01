@@ -1,11 +1,8 @@
 [build]
-builder = "DOCKERFILE"
-dockerfilePath = "docker/Dockerfile.api"
-dockerBuildTarget = "production"
-dockerBuildArgs = { BUILD_DATE = "20260601-v3" }
+builder = "NIXPACKS"
 
 [deploy]
-startCommand = "node_modules/.bin/prisma migrate deploy && node dist/main"
+startCommand = "node_modules/.bin/prisma migrate deploy && node apps/api/dist/main"
 healthcheckPath = "/api/billing/plans"
 healthcheckTimeout = 60
 restartPolicyType = "ON_FAILURE"
