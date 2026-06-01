@@ -350,17 +350,26 @@ export class AdminService {
       this.prisma.tenant.findMany({
         orderBy: { createdAt: 'desc' },
         take: 10,
-        include: { subscription: { select: { plan: true, status: true } } },
-        select: { id: true, name: true, slug: true, createdAt: true, subscription: true },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          createdAt: true,
+          subscription: { select: { plan: true, status: true } },
+        },
       }),
       this.prisma.sale.findMany({
         orderBy: { createdAt: 'desc' },
         take: 10,
-        include: {
+        select: {
+          id: true,
+          orderNumber: true,
+          total: true,
+          type: true,
+          createdAt: true,
           tenant: { select: { name: true } },
           user: { select: { name: true } },
         },
-        select: { id: true, orderNumber: true, total: true, type: true, createdAt: true, tenant: true, user: true },
       }),
     ]);
 
