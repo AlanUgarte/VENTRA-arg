@@ -3,6 +3,7 @@ export interface User {
   name: string;
   email: string;
   role: 'OWNER' | 'ADMIN' | 'CASHIER';
+  isSuperAdmin: boolean;
   createdAt: string;
   tenant: Tenant;
 }

@@ -25,8 +25,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     if (!accessToken) { router.replace('/login'); return; }
-    // Will be validated server-side; client check for UX
-  }, [accessToken, router]);
+    if (user && !user.isSuperAdmin) { router.replace('/pos'); return; }
+  }, [accessToken, user, router]);
 
   const handleLogout = async () => {
     try { await api.post('/auth/logout'); } catch {}

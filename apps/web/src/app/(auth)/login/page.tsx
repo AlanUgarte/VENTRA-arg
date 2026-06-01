@@ -39,7 +39,7 @@ export default function LoginPage() {
       useAuthStore.setState({ accessToken: tokens.accessToken, refreshToken: tokens.refreshToken });
       const { data: user } = await api.get('/auth/me');
       setAuth(user, tokens.accessToken, tokens.refreshToken);
-      router.push('/pos');
+      router.push(user.isSuperAdmin ? '/admin' : '/pos');
     } catch (err: any) {
       toast.error(err.response?.data?.message ?? 'Credenciales inválidas');
     } finally {

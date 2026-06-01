@@ -41,7 +41,7 @@ export default function RegisterPage() {
       const { data: user } = await api.get('/auth/me');
       setAuth(user, tokens.accessToken, tokens.refreshToken);
       toast.success('¡Bienvenido! Tu cuenta está lista.');
-      router.push('/pos');
+      router.push(user.isSuperAdmin ? '/admin' : '/pos');
     } catch (err: any) {
       const msg = err.response?.data?.message;
       toast.error(Array.isArray(msg) ? msg[0] : (msg ?? 'Error al registrarse'));

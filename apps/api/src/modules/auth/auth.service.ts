@@ -139,6 +139,7 @@ export class AuthService {
         name: true,
         email: true,
         role: true,
+        isSuperAdmin: true,
         createdAt: true,
         tenant: {
           select: {
