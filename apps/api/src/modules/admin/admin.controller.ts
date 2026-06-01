@@ -29,6 +29,7 @@ class BootstrapDto {
 
 class SetStatusDto {
   @IsIn(['ACTIVE', 'CANCELLED', 'PAST_DUE', 'TRIAL']) status: 'ACTIVE' | 'CANCELLED' | 'PAST_DUE' | 'TRIAL';
+  @IsOptional() @IsIn(['BASIC', 'PRO', 'ENTERPRISE', 'TRIAL']) plan?: 'BASIC' | 'PRO' | 'ENTERPRISE' | 'TRIAL';
   @IsOptional() @IsString() reason?: string;
 }
 
@@ -81,7 +82,7 @@ export class AdminController {
   @SkipSubscription()
   @Patch('tenants/:id/status')
   setTenantStatus(@Param('id') id: string, @Body() dto: SetStatusDto) {
-    return this.service.setTenantStatus(id, dto.status, dto.reason);
+    return this.service.setTenantStatus(id, dto.status, dto.plan, dto.reason);
   }
 
   @ApiBearerAuth()

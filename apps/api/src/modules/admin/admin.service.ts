@@ -177,6 +177,7 @@ export class AdminService {
   async setTenantStatus(
     id: string,
     status: 'ACTIVE' | 'CANCELLED' | 'PAST_DUE' | 'TRIAL',
+    plan?: 'BASIC' | 'PRO' | 'ENTERPRISE' | 'TRIAL',
     reason?: string,
   ) {
     const tenant = await this.prisma.tenant.findUnique({ where: { id } });
@@ -184,7 +185,10 @@ export class AdminService {
 
     await this.prisma.subscription.update({
       where: { tenantId: id },
-      data: { status },
+      data: {
+        status,
+        ...(plan && { plan }),
+      },
     });
 
     await this.prisma.auditLog.create({
@@ -193,7 +197,7 @@ export class AdminService {
         entity: 'Subscription',
         entityId: id,
         action: 'UPDATE',
-        after: { status, reason, updatedBy: 'superadmin' },
+        after: { status, plan, reason, updatedBy: 'superadmin' },
       },
     });
 

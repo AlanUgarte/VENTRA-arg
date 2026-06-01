@@ -78,8 +78,8 @@ export function useAdminActivity() {
 export function useSetTenantStatus() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, status, reason }: { id: string; status: string; reason?: string }) =>
-      api.patch(`/admin/tenants/${id}/status`, { status, reason }),
+    mutationFn: ({ id, status, plan, reason }: { id: string; status: string; plan?: string; reason?: string }) =>
+      api.patch(`/admin/tenants/${id}/status`, { status, plan, reason }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['admin'] });
     },
