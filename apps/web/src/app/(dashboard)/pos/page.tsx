@@ -12,6 +12,7 @@ import { useProducts, useRubros } from '@/hooks/use-products';
 import { useCustomers } from '@/hooks/use-customers';
 import { useCreateSale } from '@/hooks/use-sales';
 import { useCartStore } from '@/store/cart.store';
+import { useAuthStore } from '@/store/auth.store';
 import { money } from '@/lib/utils';
 import { drawReceipt, shareOrDownloadReceipt } from '@/lib/receipt';
 import type { Product, Sale } from '@/types';
@@ -30,6 +31,8 @@ export default function PosPage() {
   const { data: rubros = [] } = useRubros();
   const { data: customers = [] } = useCustomers();
   const createSale = useCreateSale();
+  const { user } = useAuthStore();
+  const isCashier = user?.role === 'CASHIER';
 
   const { items, discountPct, addItem, removeItem, updateQty, setDiscount, clear, totals } =
     useCartStore();
@@ -226,7 +229,7 @@ export default function PosPage() {
                       </span>
                       <p className="font-bold text-sm leading-tight">{p.name}</p>
                       <p className="mt-1 text-[11px] text-muted-foreground">
-                        Gan. {money(p.gananciaUnit * (1 - discountPct / 100))} c/u
+                        {!isCashier && `Gan. ${money(p.gananciaUnit * (1 - discountPct / 100))} c/u`}
                       </p>
                       <div className="mt-auto pt-2">
                         {discountPct > 0 ? (

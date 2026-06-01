@@ -210,39 +210,63 @@ export default function LandingPage() {
       {/* PRICING */}
       <section id="precio" style={{ padding: '0 clamp(18px,4vw,40px) clamp(48px,7vw,84px)', maxWidth: 1180, margin: '0 auto' }}>
         <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 40px' }}>
-          <span style={{ fontWeight: 800, fontSize: 13, letterSpacing: '.12em', textTransform: 'uppercase', color: ACCENT }}>Precio simple</span>
-          <h2 style={{ fontFamily: 'var(--font-fraunces),Georgia,serif', fontWeight: 700, fontSize: 'clamp(28px,4.2vw,44px)', lineHeight: 1.08, margin: '12px 0 14px' }}>Un solo plan, todo incluido</h2>
-          <p style={{ fontSize: 'clamp(15px,2vw,17.5px)', color: '#5d6b5f' }}>Sin letra chica. Probás 3 días gratis y si te sirve, seguís.</p>
+          <span style={{ fontWeight: 800, fontSize: 13, letterSpacing: '.12em', textTransform: 'uppercase', color: ACCENT }}>Elegí tu plan</span>
+          <h2 style={{ fontFamily: 'var(--font-fraunces),Georgia,serif', fontWeight: 700, fontSize: 'clamp(28px,4.2vw,44px)', lineHeight: 1.08, margin: '12px 0 14px' }}>Simple y sin letra chica</h2>
+          <p style={{ fontSize: 'clamp(15px,2vw,17.5px)', color: '#5d6b5f' }}>3 días gratis, no pedimos tarjeta. Cancelás cuando querés.</p>
         </div>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <div style={{ background: '#fff', border: '1px solid #e7e0d2', borderRadius: 24, boxShadow: '0 30px 70px rgba(26,28,26,.16)', maxWidth: 430, width: '100%', overflow: 'hidden' }}>
-            <div style={{ background: 'linear-gradient(135deg,#0d9f6e,#12c98a)', padding: '30px 32px 26px', color: '#fff' }}>
-              <span style={{ display: 'inline-block', background: 'rgba(255,255,255,.2)', fontWeight: 700, fontSize: 12.5, padding: '5px 13px', borderRadius: 20, marginBottom: 14 }}>PLAN COMPLETO</span>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                <span style={{ fontSize: 24, fontWeight: 700 }}>$</span>
-                <span style={{ fontFamily: 'var(--font-fraunces),Georgia,serif', fontWeight: 900, fontSize: 'clamp(46px,7vw,62px)', lineHeight: 1 }}>30.000</span>
-                <span style={{ fontSize: 16, opacity: .9, fontWeight: 600 }}>/ mes</span>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, maxWidth: 860, margin: '0 auto' }}>
+          {/* BASIC */}
+          <div style={{ background: '#fff', border: '1.5px solid #e7e0d2', borderRadius: 24, overflow: 'hidden' }}>
+            <div style={{ padding: '28px 28px 22px' }}>
+              <span style={{ fontWeight: 800, fontSize: 12, letterSpacing: '.1em', textTransform: 'uppercase', color: '#2f6fed' }}>PLAN BÁSICO</span>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginTop: 10 }}>
+                <span style={{ fontSize: 20, fontWeight: 700, color: '#1a1c1a' }}>$</span>
+                <span style={{ fontFamily: 'var(--font-fraunces),Georgia,serif', fontWeight: 900, fontSize: 48, lineHeight: 1, color: '#1a1c1a' }}>15.000</span>
+                <span style={{ fontSize: 15, color: '#5d6b5f', fontWeight: 600 }}>/mes</span>
               </div>
-              <div style={{ marginTop: 6, opacity: .92, fontSize: 14 }}>Todas las funciones · usuarios ilimitados</div>
+              <p style={{ color: '#5d6b5f', fontSize: 14, marginTop: 6 }}>Para kioscos con 1 dueño</p>
             </div>
-            <div style={{ padding: '26px 32px 30px' }}>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 13, marginBottom: 24 }}>
-                {['Punto de venta con ticket y comprobante','Inventario, control de stock y precios','Clientes, fiados y cuenta corriente','Proveedores con varios medios de pago','Reportes, gráficos y respaldos','Multiusuario con acceso simultáneo'].map((feat) => (
-                  <li key={feat} style={{ display: 'flex', gap: 11, fontSize: 14.5, fontWeight: 500 }}>
-                    <span style={{ flexShrink: 0, width: 21, height: 21, borderRadius: '50%', background: '#e2f4ec', display: 'grid', placeItems: 'center' }}>
-                      <Check size={12} style={{ stroke: '#0a7e57' }} />
-                    </span>
-                    {feat}
+            <div style={{ padding: '0 28px 28px' }}>
+              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+                {['Punto de venta con ticket','Inventario y stock','Clientes y fiados','Proveedores','Solo 1 usuario (el dueño)'].map((f) => (
+                  <li key={f} style={{ display: 'flex', gap: 9, fontSize: 14, alignItems: 'center' }}>
+                    <span style={{ width: 18, height: 18, borderRadius: '50%', background: '#e2f4ec', display: 'grid', placeItems: 'center', flexShrink: 0 }}><Check size={10} style={{ stroke: '#0a7e57' }} /></span>{f}
                   </li>
                 ))}
               </ul>
-              <Link href="/register" style={{ display: 'block', width: '100%', background: PRIMARY, color: '#fff', borderRadius: 11, padding: '15px', fontWeight: 800, fontSize: 15, textAlign: 'center', textDecoration: 'none', boxShadow: '0 8px 20px rgba(13,159,110,.28)' }}>
+              <Link href="/register" style={{ display: 'block', width: '100%', background: '#fff', color: '#1a1c1a', border: '1.5px solid #e7e0d2', borderRadius: 11, padding: '13px', fontWeight: 700, fontSize: 15, textAlign: 'center', textDecoration: 'none' }}>
                 Empezar prueba gratis
               </Link>
-              <p style={{ textAlign: 'center', fontSize: 13, color: '#5d6b5f', marginTop: 14 }}>3 días gratis · no pedimos tarjeta para probar</p>
+            </div>
+          </div>
+
+          {/* PRO */}
+          <div style={{ background: '#fff', border: '2px solid #0d9f6e', borderRadius: 24, overflow: 'hidden', position: 'relative', boxShadow: '0 16px 40px rgba(13,159,110,.15)' }}>
+            <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', background: PRIMARY, color: '#fff', fontWeight: 800, fontSize: 11, padding: '5px 16px', borderRadius: '0 0 12px 12px', letterSpacing: '.06em' }}>MÁS POPULAR</div>
+            <div style={{ background: 'linear-gradient(135deg,#0d9f6e,#12c98a)', padding: '28px 28px 22px', color: '#fff' }}>
+              <span style={{ fontWeight: 800, fontSize: 12, letterSpacing: '.1em', textTransform: 'uppercase', opacity: .9 }}>PLAN PROFESIONAL</span>
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginTop: 10 }}>
+                <span style={{ fontSize: 20, fontWeight: 700 }}>$</span>
+                <span style={{ fontFamily: 'var(--font-fraunces),Georgia,serif', fontWeight: 900, fontSize: 48, lineHeight: 1 }}>30.000</span>
+                <span style={{ fontSize: 15, opacity: .9, fontWeight: 600 }}>/mes</span>
+              </div>
+              <p style={{ opacity: .92, fontSize: 14, marginTop: 6 }}>Para almacenes con empleados</p>
+            </div>
+            <div style={{ padding: '22px 28px 28px' }}>
+              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+                {['Todo del Plan Básico','Hasta 3 usuarios simultáneos','Empleados con acceso restringido','Reportes y gráficos completos','Ganancia visible solo para el dueño'].map((f) => (
+                  <li key={f} style={{ display: 'flex', gap: 9, fontSize: 14, alignItems: 'center' }}>
+                    <span style={{ width: 18, height: 18, borderRadius: '50%', background: '#e2f4ec', display: 'grid', placeItems: 'center', flexShrink: 0 }}><Check size={10} style={{ stroke: '#0a7e57' }} /></span>{f}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/register" style={{ display: 'block', width: '100%', background: PRIMARY, color: '#fff', borderRadius: 11, padding: '13px', fontWeight: 800, fontSize: 15, textAlign: 'center', textDecoration: 'none', boxShadow: '0 8px 20px rgba(13,159,110,.28)' }}>
+                Empezar prueba gratis
+              </Link>
             </div>
           </div>
         </div>
+        <p style={{ textAlign: 'center', color: '#5d6b5f', fontSize: 13, marginTop: 16 }}>3 días gratis · no pedimos tarjeta · cancelás cuando querés</p>
       </section>
 
       {/* FAQ */}

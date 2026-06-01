@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { toast } from 'sonner';
 import { Plus, Pencil, Trash2, Package } from 'lucide-react';
 import { Topbar } from '@/components/layout/topbar';
+import { useAuthStore } from '@/store/auth.store';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -32,6 +33,8 @@ export default function InventoryPage() {
   const [editId, setEditId] = useState<string | null>(null);
   const [stockId, setStockId] = useState<string | null>(null);
   const [stockQty, setStockQty] = useState(1);
+  const { user } = useAuthStore();
+  const isCashier = user?.role === 'CASHIER';
 
   const { data: products = [], isLoading } = useProducts(undefined, true);
   const { data: rubros = [] } = useRubros();
@@ -202,7 +205,7 @@ export default function InventoryPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border">
-                    {['Artículo', 'Rubro', 'Costo real', 'P. venta', 'Gan. u.', 'Stock', ''].map((h) => (
+                    {(isCashier ? ['Artículo', 'Rubro', 'P. venta', 'Stock', ''] : ['Artículo', 'Rubro', 'Costo real', 'P. venta', 'Gan. u.', 'Stock', '']).map((h) => (
                       <th key={h} className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
                         {h}
                       </th>
@@ -218,9 +221,9 @@ export default function InventoryPage() {
                           {p.rubro?.name}
                         </span>
                       </td>
-                      <td className="px-4 py-2.5 font-mono">{money(p.costoReal)}</td>
+                      {!isCashier && <td className="px-4 py-2.5 font-mono">{money(p.costoReal)}</td>}
                       <td className="px-4 py-2.5 font-mono font-semibold">{money(p.precioVenta)}</td>
-                      <td className="px-4 py-2.5 font-mono text-primary">{money(p.gananciaUnit)}</td>
+                      {!isCashier && <td className="px-4 py-2.5 font-mono text-primary">{money(p.gananciaUnit)}</td>}
                       <td className="px-4 py-2.5">
                         <div className="flex items-center gap-2">
                           <Badge variant={p.stock <= 0 ? 'destructive' : p.stock <= 5 ? 'warning' : 'success'}>

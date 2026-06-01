@@ -5,12 +5,13 @@ export const PLANS = {
     description: 'Para kioscos pequeños',
     price: 15_000,
     currency: 'ARS',
-    maxUsers: 2,
+    maxUsers: 1,
     features: [
       'Punto de venta con ticket',
       'Inventario y stock',
       'Clientes y fiados',
-      'Hasta 2 usuarios',
+      'Proveedores con medios de pago',
+      'Solo 1 usuario (el dueño)',
       'Exportación de respaldos',
     ],
   },
@@ -20,31 +21,24 @@ export const PLANS = {
     description: 'Para almacenes con empleados',
     price: 30_000,
     currency: 'ARS',
-    maxUsers: null,
+    maxUsers: 3,
     features: [
       'Todo del Plan Básico',
-      'Usuarios ilimitados',
-      'Proveedores y facturas',
+      'Hasta 3 usuarios simultáneos',
+      'Empleados con permisos restringidos',
       'Reportes y gráficos completos',
       'Acceso simultáneo desde varias cajas',
-    ],
-  },
-  ENTERPRISE: {
-    id: 'ENTERPRISE' as const,
-    name: 'Plan Enterprise',
-    description: 'Para cadenas y locales múltiples',
-    price: 75_000,
-    currency: 'ARS',
-    maxUsers: null,
-    features: [
-      'Todo del Plan Pro',
-      'Soporte prioritario',
-      'Configuración personalizada',
-      'API access',
-      'SLA garantizado',
+      'Ganancia visible solo para el dueño',
     ],
   },
 } as const;
 
 export type PlanId = keyof typeof PLANS;
 export const PLAN_IDS = Object.keys(PLANS) as PlanId[];
+
+export const MAX_USERS_BY_PLAN: Record<string, number> = {
+  TRIAL:      1,
+  BASIC:      1,
+  PRO:        3,
+  ENTERPRISE: 999,
+};

@@ -17,13 +17,14 @@ import { useRouter } from 'next/navigation';
 import api from '@/lib/api';
 
 const NAV = [
-  { href: '/pos', label: 'Punto de venta', icon: ShoppingCart },
-  { href: '/inventory', label: 'Inventario', icon: Package },
-  { href: '/customers', label: 'Clientes / Fiados', icon: Users },
-  { href: '/suppliers', label: 'Proveedores', icon: Truck },
-  { href: '/reports', label: 'Reportes', icon: BarChart3 },
-  { href: '/billing', label: 'Suscripción', icon: CreditCard },
-  { href: '/settings', label: 'Configuración', icon: Settings },
+  { href: '/pos',       label: 'Punto de venta',   icon: ShoppingCart, roles: ['OWNER','ADMIN','CASHIER'] },
+  { href: '/inventory', label: 'Inventario',        icon: Package,      roles: ['OWNER','ADMIN','CASHIER'] },
+  { href: '/customers', label: 'Clientes / Fiados', icon: Users,        roles: ['OWNER','ADMIN','CASHIER'] },
+  { href: '/suppliers', label: 'Proveedores',       icon: Truck,        roles: ['OWNER','ADMIN','CASHIER'] },
+  { href: '/reports',   label: 'Reportes',          icon: BarChart3,    roles: ['OWNER','ADMIN'] },
+  { href: '/users',     label: 'Usuarios',          icon: Users,        roles: ['OWNER','ADMIN'] },
+  { href: '/billing',   label: 'Suscripción',       icon: CreditCard,   roles: ['OWNER'] },
+  { href: '/settings',  label: 'Configuración',     icon: Settings,     roles: ['OWNER','ADMIN'] },
 ];
 
 export function Sidebar() {
@@ -56,7 +57,7 @@ export function Sidebar() {
 
       {/* Nav */}
       <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-3">
-        {NAV.map(({ href, label, icon: Icon }) => {
+        {NAV.filter(({ roles }) => !user?.role || roles.includes(user.role)).map(({ href, label, icon: Icon }) => {
           const active = pathname.startsWith(href);
           return (
             <Link

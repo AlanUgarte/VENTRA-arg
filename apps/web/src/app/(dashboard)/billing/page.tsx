@@ -24,7 +24,6 @@ import { money, fdate } from '@/lib/utils';
 const PLAN_ICONS: Record<string, React.ElementType> = {
   BASIC: Zap,
   PRO: Crown,
-  ENTERPRISE: Building2,
 };
 
 const PLAN_COLORS: Record<string, string> = {
