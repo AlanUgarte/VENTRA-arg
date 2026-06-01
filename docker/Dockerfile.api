@@ -1,34 +1,30 @@
-# cache-bust: 20260601-admin-panel
 FROM node:20-slim AS base
 WORKDIR /app
 RUN apt-get update -y && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
+
+# Install dependencies
 COPY package*.json ./
 COPY apps/api/package*.json ./apps/api/
 COPY prisma ./prisma/
-
-FROM base AS deps
 RUN npm ci --workspace=apps/api
+
+# Generate Prisma client
 RUN npx prisma generate
 
-FROM deps AS development
-COPY apps/api ./apps/api/
-CMD ["npm", "run", "dev:api"]
-
-FROM deps AS builder
+# Copy source and build — ARG busts cache so this always rebuilds
+ARG BUILD_DATE=unknown
 COPY apps/api ./apps/api/
 RUN npm run build:api
 
+# Production image
 FROM node:20-slim AS production
 WORKDIR /app
 ENV NODE_ENV=production
 RUN apt-get update -y && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /app/apps/api/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/prisma ./prisma
-COPY docker/entrypoint.sh ./entrypoint.sh
-RUN chmod +x ./entrypoint.sh
+COPY --from=base /app/apps/api/dist ./dist
+COPY --from=base /app/node_modules ./node_modules
+COPY --from=base /app/prisma ./prisma
 
 EXPOSE 4000
-ENTRYPOINT ["./entrypoint.sh"]
 CMD ["node", "dist/main"]
