@@ -12,6 +12,7 @@ import { CustomersModule } from './modules/customers/customers.module';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { BillingModule } from './modules/billing/billing.module';
+import { AdminModule } from './modules/admin/admin.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { SubscriptionGuard } from './common/guards/subscription.guard';
@@ -37,6 +38,7 @@ import { validateEnv } from './config/env.validation';
     SuppliersModule,
     ReportsModule,
     BillingModule,
+    AdminModule,
   ],
   providers: [
     // 1. Rate limit global

@@ -1,5 +1,5 @@
 import { plainToClass } from 'class-transformer';
-import { IsEnum, IsString, MinLength, validateSync } from 'class-validator';
+import { IsEnum, IsOptional, IsString, MinLength, validateSync } from 'class-validator';
 
 enum NodeEnv {
   Development = 'development',
@@ -22,6 +22,8 @@ class EnvVars {
   @IsString() JWT_REFRESH_EXPIRES_IN: string;
 
   @IsEnum(NodeEnv) NODE_ENV: NodeEnv;
+
+  @IsOptional() @IsString() ADMIN_BOOTSTRAP_SECRET?: string;
 }
 
 export function validateEnv(config: Record<string, unknown>) {
