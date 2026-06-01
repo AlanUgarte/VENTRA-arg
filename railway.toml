@@ -4,15 +4,8 @@ dockerfilePath = "docker/Dockerfile.api"
 dockerBuildTarget = "production"
 
 [deploy]
-startCommand = "node dist/main"
+startCommand = "node_modules/.bin/prisma migrate deploy && node dist/main"
 healthcheckPath = "/api/billing/plans"
-healthcheckTimeout = 30
+healthcheckTimeout = 60
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
-
-[[services]]
-name = "api"
-
-[services.variables]
-PORT = "4000"
-NODE_ENV = "production"
