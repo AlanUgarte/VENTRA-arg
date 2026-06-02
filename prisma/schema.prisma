@@ -26,8 +26,9 @@ model Tenant {
   sales          Sale[]
   customers      Customer[]
   suppliers      Supplier[]
-  paymentMethods PaymentMethod[]
-  auditLogs      AuditLog[]
+  paymentMethods  PaymentMethod[]
+  auditLogs       AuditLog[]
+  supplierReturns SupplierReturn[]
 }
 
 // ─────────────────────────────────────────────
@@ -141,8 +142,9 @@ model Product {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  saleLines   SaleLine[]
-  creditLines CreditLine[]
+  saleLines       SaleLine[]
+  creditLines     CreditLine[]
+  supplierReturns SupplierReturn[]
 
   @@index([tenantId])
   @@index([tenantId, rubroId])
@@ -296,6 +298,7 @@ model Supplier {
   createdAt DateTime @default(now())
 
   invoices SupplierInvoice[]
+  returns  SupplierReturn[]
 
   @@index([tenantId])
 }
@@ -335,6 +338,50 @@ model SupplierPayment {
 
   @@index([tenantId])
   @@index([invoiceId])
+}
+
+// ─────────────────────────────────────────────
+// DEVOLUCIONES A PROVEEDORES
+// ─────────────────────────────────────────────
+
+enum ReturnStatus {
+  PENDING    // Devuelto, esperando crédito/reposición
+  CREDITED   // Proveedor acreditó el monto
+  REPLACED   // Proveedor repuso el artículo
+  REJECTED   // Proveedor rechazó la devolución
+}
+
+enum ReturnReason {
+  BROKEN      // Rotura
+  EXPIRED     // Vencimiento
+  DEFECTIVE   // Defecto de fábrica
+  WRONG_ITEM  // Artículo incorrecto
+  OTHER       // Otro motivo
+}
+
+model SupplierReturn {
+  id           String        @id @default(cuid())
+  tenantId     String
+  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  supplierId   String
+  supplier     Supplier      @relation(fields: [supplierId], references: [id])
+  productId    String?
+  product      Product?      @relation(fields: [productId], references: [id])
+  productName  String        // snapshot del nombre
+  quantity     Int
+  reason       ReturnReason
+  reasonDetail String?       // descripción adicional
+  status       ReturnStatus  @default(PENDING)
+  creditAmount Decimal?      @db.Decimal(12, 2) // monto acreditado (si aplica)
+  returnedAt   DateTime      @default(now())
+  resolvedAt   DateTime?
+  notes        String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([tenantId])
+  @@index([tenantId, supplierId])
+  @@index([tenantId, status])
 }
 
 // ─────────────────────────────────────────────

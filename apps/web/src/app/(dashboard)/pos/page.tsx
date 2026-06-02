@@ -98,6 +98,10 @@ export default function PosPage() {
   const checkout = async (type: 'CASH' | 'CREDIT', customerId?: string) => {
     if (!items.length) return;
     try {
+      // Snapshot del carrito ANTES de limpiar — tiene los valores correctos como números
+      const cartSnapshot = items.map((i) => ({ ...i }));
+      const { subtotal, discountAmount, total } = totals();
+
       const payload = {
         type,
         discountPct,
@@ -105,22 +109,28 @@ export default function PosPage() {
         lines: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
       };
       const sale: Sale = await createSale.mutateAsync(payload);
+
+      // Generar comprobante con datos del carrito (números puros, sin Decimal de Prisma)
       const canvas = drawReceipt({
         orderNumber: sale.orderNumber,
         date: new Date(sale.createdAt),
         type: sale.type,
         customerName: sale.customer?.name,
-        lines: sale.lines.map((l) => ({
-          name: l.productName,
-          quantity: l.quantity,
-          unitPrice: Number(l.priceUnit),
-          subtotal: Number(l.subtotal),
-        })),
-        subtotal: Number(sale.subtotal),
-        discountPct: Number(sale.discountPct),
-        discountAmount: Number(sale.discountAmount),
-        total: Number(sale.total),
+        lines: cartSnapshot.map((item) => {
+          const unitPrice = Math.round(item.precioVenta * (1 - discountPct / 100));
+          return {
+            name: item.name,
+            quantity: item.quantity,
+            unitPrice,
+            subtotal: unitPrice * item.quantity,
+          };
+        }),
+        subtotal,
+        discountPct,
+        discountAmount,
+        total,
       });
+
       setReceiptSale(sale);
       setReceiptCanvas(canvas);
       clear();
