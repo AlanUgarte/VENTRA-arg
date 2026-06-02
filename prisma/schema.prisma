@@ -132,6 +132,7 @@ model Product {
   rubroId    String
   rubro      Rubro    @relation(fields: [rubroId], references: [id])
   name       String
+  barcode    String?  // Código de barras EAN-13 / EAN-8 / Code128
   costoBase  Decimal  @db.Decimal(12, 2)
   descCompra Decimal  @default(0)  @db.Decimal(5, 2)
   ganancia   Decimal  @default(40) @db.Decimal(5, 2)
@@ -146,6 +147,7 @@ model Product {
   @@index([tenantId])
   @@index([tenantId, rubroId])
   @@index([tenantId, isActive])
+  @@index([tenantId, barcode])
 }
 
 // ─────────────────────────────────────────────

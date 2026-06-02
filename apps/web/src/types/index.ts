@@ -33,6 +33,7 @@ export interface Rubro {
 export interface Product {
   id: string;
   name: string;
+  barcode?: string;
   rubroId: string;
   rubro: Rubro;
   costoBase: number;

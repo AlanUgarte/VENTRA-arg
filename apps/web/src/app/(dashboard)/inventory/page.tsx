@@ -25,6 +25,7 @@ const schema = z.object({
   descCompra: z.coerce.number().min(0).max(100).default(0),
   ganancia: z.coerce.number().min(0).default(40),
   stock: z.coerce.number().int().min(0).default(0),
+  barcode: z.string().max(50).optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -155,6 +156,11 @@ export default function InventoryPage() {
               <div className="space-y-1">
                 <Label>Stock inicial</Label>
                 <Input type="number" min={0} step={1} placeholder="24" {...register('stock')} />
+              </div>
+              <div className="space-y-1">
+                <Label>Código de barras (opcional)</Label>
+                <Input placeholder="Ej: 7790001234567" {...register('barcode')} />
+                <p className="text-[11px] text-muted-foreground">EAN-13, EAN-8, Code128 — para escanear desde el celular en el POS</p>
               </div>
 
               {/* Preview */}

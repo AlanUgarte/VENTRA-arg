@@ -70,6 +70,12 @@ export class ProductsController {
     return this.service.findAll(u.tenantId, rubroId, !all);
   }
 
+  // Buscar por código de barras — accesible para CASHIER también
+  @Get('barcode/:code')
+  findByBarcode(@CurrentUser() u: JwtPayload, @Param('code') code: string) {
+    return this.service.findByBarcode(u.tenantId, code);
+  }
+
   @Get(':id')
   findOne(@CurrentUser() u: JwtPayload, @Param('id') id: string) {
     return this.service.findOne(u.tenantId, id);

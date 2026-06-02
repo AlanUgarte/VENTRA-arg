@@ -72,6 +72,15 @@ export class ProductsService {
     return products.map(this.withPrices);
   }
 
+  async findByBarcode(tenantId: string, barcode: string) {
+    const p = await this.prisma.product.findFirst({
+      where: { tenantId, barcode, isActive: true },
+      include: { rubro: true },
+    });
+    if (!p) throw new NotFoundException(`Producto no encontrado para código: ${barcode}`);
+    return this.withPrices(p);
+  }
+
   async findOne(tenantId: string, id: string) {
     const p = await this.prisma.product.findFirst({
       where: { id, tenantId },

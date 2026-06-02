@@ -64,6 +64,14 @@ export function useDeleteProduct() {
   });
 }
 
+export function useProductByBarcode() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (barcode: string) =>
+      api.get(`/products/barcode/${encodeURIComponent(barcode)}`).then((r) => r.data as Product),
+  });
+}
+
 export function useCreateRubro() {
   const qc = useQueryClient();
   return useMutation({

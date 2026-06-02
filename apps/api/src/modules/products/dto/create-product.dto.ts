@@ -13,6 +13,8 @@ export class CreateProductDto {
   @IsString() @MinLength(2) @MaxLength(120) name: string;
   @IsString() rubroId: string;
 
+  @IsOptional() @IsString() @MaxLength(50) barcode?: string;
+
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0.01)
   costoBase: number;

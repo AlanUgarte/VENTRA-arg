@@ -1,14 +1,15 @@
 'use client';
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
-import { Plus, Minus, Search, Percent, ShoppingCart, Trash2, Check, Download, Share2 } from 'lucide-react';
+import { Plus, Minus, Search, Percent, ShoppingCart, Trash2, Check, Download, Share2, ScanLine } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Topbar } from '@/components/layout/topbar';
 import { EmptyState } from '@/components/shared/empty-state';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogBody } from '@/components/ui/dialog';
-import { useProducts, useRubros } from '@/hooks/use-products';
+import { useProducts, useRubros, useProductByBarcode } from '@/hooks/use-products';
+import { BarcodeScanner } from '@/components/pos/barcode-scanner';
 import { useCustomers } from '@/hooks/use-customers';
 import { useCreateSale } from '@/hooks/use-sales';
 import { useCartStore } from '@/store/cart.store';
@@ -27,6 +28,8 @@ export default function PosPage() {
   const [showFiarModal, setShowFiarModal] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState('');
   const [showMobileCart, setShowMobileCart] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+  const scanBarcode = useProductByBarcode();
 
   const { data: products = [], isLoading } = useProducts();
   const { data: rubros = [] } = useRubros();
@@ -47,6 +50,29 @@ export default function PosPage() {
   });
 
   const rubroNames = ['Todos', ...rubros.map((r) => r.name)];
+
+  const handleBarcodeScanned = async (code: string) => {
+    setShowScanner(false);
+    try {
+      const product = await scanBarcode.mutateAsync(code);
+      const err = addItem({
+        productId: product.id,
+        name: product.name,
+        rubroName: product.rubro?.name ?? '',
+        precioVenta: product.precioVenta,
+        costoReal: product.costoReal,
+        stock: product.stock,
+      }, 1);
+      if (err) {
+        toast.error(err);
+      } else {
+        toast.success(`✓ ${product.name} agregado al ticket`);
+        setShowMobileCart(true); // Muestra el carrito automáticamente
+      }
+    } catch {
+      toast.error(`Código ${code} no encontrado. Verificá que el producto tenga ese código asignado.`);
+    }
+  };
 
   const handleAddToCart = (product: Product, qty = 1) => {
     const err = addItem(
@@ -135,14 +161,24 @@ export default function PosPage() {
         <div className={`flex flex-1 flex-col min-w-0 gap-3 p-3 md:p-0 ${showMobileCart ? 'hidden md:flex' : 'flex'}`}>
           {/* Controls */}
           <div className="flex flex-wrap gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
-            <div className="relative flex-1 min-w-48">
+            <div className="relative flex-1 min-w-48 flex gap-2">
+              <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar artículo…"
+                placeholder="Buscar artículo o código…"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-9"
               />
+              </div>
+              {/* Botón escáner — prominente en mobile */}
+              <button
+                onClick={() => setShowScanner(true)}
+                className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                title="Escanear código de barras"
+              >
+                <ScanLine className="h-5 w-5" />
+              </button>
             </div>
             <div className="flex items-center gap-2 rounded-xl border border-accent/30 bg-accent/5 px-3">
               <Percent className="h-4 w-4 text-accent" />
@@ -386,6 +422,14 @@ export default function PosPage() {
           </div>
         </div>
       </div>
+
+      {/* Barcode Scanner */}
+      {showScanner && (
+        <BarcodeScanner
+          onScan={handleBarcodeScanned}
+          onClose={() => setShowScanner(false)}
+        />
+      )}
 
       {/* Fiar modal */}
       <Dialog open={showFiarModal} onOpenChange={setShowFiarModal}>
