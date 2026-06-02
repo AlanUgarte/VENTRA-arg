@@ -10,11 +10,11 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 @ApiTags('reports')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('OWNER', 'ADMIN')
 @Controller('reports')
 export class ReportsController {
   constructor(private service: ReportsService) {}
 
+  // overview accesible para todos los roles (se usa en el Topbar)
   @Get('overview')
   getOverview(
     @CurrentUser() u: JwtPayload,
@@ -24,6 +24,7 @@ export class ReportsController {
     return this.service.getOverview(u.tenantId, from, to);
   }
 
+  @Roles('OWNER', 'ADMIN')
   @Get('products')
   getProductRotation(
     @CurrentUser() u: JwtPayload,
@@ -34,6 +35,7 @@ export class ReportsController {
     return this.service.getProductRotation(u.tenantId, from, to, limit);
   }
 
+  @Roles('OWNER', 'ADMIN')
   @Get('rubros')
   getRubroBreakdown(
     @CurrentUser() u: JwtPayload,
@@ -43,6 +45,7 @@ export class ReportsController {
     return this.service.getRubroBreakdown(u.tenantId, from, to);
   }
 
+  @Roles('OWNER', 'ADMIN')
   @Get('sales')
   getSaleHistory(
     @CurrentUser() u: JwtPayload,

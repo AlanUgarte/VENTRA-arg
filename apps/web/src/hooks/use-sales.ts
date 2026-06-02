@@ -25,6 +25,8 @@ export function useCreateSale() {
       qc.invalidateQueries({ queryKey: saleKeys.all });
       qc.invalidateQueries({ queryKey: ['products'] });
       qc.invalidateQueries({ queryKey: ['customers'] });
+      // Actualiza los KPIs del topbar (Facturado, Ganancia, Por cobrar)
+      qc.invalidateQueries({ queryKey: ['reports'] });
     },
   });
 }
@@ -36,6 +38,7 @@ export function useVoidSale() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: saleKeys.all });
       qc.invalidateQueries({ queryKey: ['products'] });
+      qc.invalidateQueries({ queryKey: ['reports'] });
     },
   });
 }
