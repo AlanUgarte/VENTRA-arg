@@ -7,191 +7,175 @@ interface BarcodeScannerProps {
   onClose: () => void;
 }
 
+// ID fijo del contenedor — debe estar en el DOM antes de inicializar el scanner
+const CONTAINER_ID = 'html5-qrcode-container';
+
 export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const rafRef = useRef<number>(0);
+  const [phase, setPhase] = useState<'loading' | 'scanning' | 'error'>('loading');
+  const [manualCode, setManualCode] = useState('');
+  const [showManual, setShowManual] = useState(false);
+  const scannerRef = useRef<any>(null);
   const mountedRef = useRef(true);
   const scannedRef = useRef(false);
 
-  const [phase, setPhase] = useState<'starting' | 'scanning' | 'no-detector' | 'error'>('starting');
-  const [manualCode, setManualCode] = useState('');
-  const [showManual, setShowManual] = useState(false);
-
-  const stopAll = () => {
-    cancelAnimationFrame(rafRef.current);
-    streamRef.current?.getTracks().forEach((t) => t.stop());
-    streamRef.current = null;
+  const stopScanner = async () => {
+    if (scannerRef.current) {
+      try { await scannerRef.current.stop(); } catch {}
+      try { scannerRef.current.clear(); } catch {}
+      scannerRef.current = null;
+    }
   };
 
-  const handleClose = () => { stopAll(); onClose(); };
+  const handleClose = async () => {
+    await stopScanner();
+    onClose();
+  };
 
-  const handleFound = (code: string) => {
+  const handleFound = async (code: string) => {
     if (scannedRef.current) return;
     scannedRef.current = true;
-    stopAll();
-    // Vibración táctil de feedback
     if ('vibrate' in navigator) navigator.vibrate(100);
-    onScan(code);
+    await stopScanner();
+    onScan(code.trim());
   };
 
+  // El div DEBE estar montado antes de inicializar el scanner
+  // Por eso usamos useEffect (corre después del primer render)
   useEffect(() => {
     mountedRef.current = true;
-    scannedRef.current = false;
 
-    const start = async () => {
-      // Pedir cámara
-      let stream: MediaStream;
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
-          audio: false,
-        });
-      } catch {
-        if (!mountedRef.current) return;
-        setPhase('error');
-        setShowManual(true);
-        return;
-      }
-
-      if (!mountedRef.current) { stream.getTracks().forEach(t => t.stop()); return; }
-      streamRef.current = stream;
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.setAttribute('playsinline', 'true');
-        await videoRef.current.play().catch(() => {});
-      }
-
+    const init = async () => {
+      // Pequeño delay para asegurar que el DOM está listo
+      await new Promise(r => setTimeout(r, 100));
       if (!mountedRef.current) return;
 
-      // Chequear BarcodeDetector
-      if (!('BarcodeDetector' in window)) {
-        setPhase('no-detector');
-        setShowManual(true);
-        return;
-      }
-
-      setPhase('scanning');
-
-      let detector: any;
       try {
-        detector = new (window as any).BarcodeDetector({
-          formats: ['ean_13', 'ean_8', 'code_128', 'code_39', 'qr_code', 'upc_a', 'upc_e'],
-        });
-      } catch {
-        detector = new (window as any).BarcodeDetector();
+        const { Html5Qrcode } = await import('html5-qrcode');
+
+        const scanner = new Html5Qrcode(CONTAINER_ID);
+        scannerRef.current = scanner;
+
+        if (!mountedRef.current) return;
+
+        await scanner.start(
+          { facingMode: 'environment' },
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 100 },
+            aspectRatio: 1.5,
+          },
+          (decodedText: string) => {
+            if (!scannedRef.current) handleFound(decodedText);
+          },
+          undefined, // error callback — silenciar los errores de frame
+        );
+
+        if (mountedRef.current) setPhase('scanning');
+
+      } catch (err: any) {
+        if (!mountedRef.current) return;
+        const msg = err?.message ?? '';
+        if (msg.includes('Permission') || msg.includes('Denied') || msg.includes('NotAllowed')) {
+          // Permiso denegado
+        }
+        setPhase('error');
+        setShowManual(true);
       }
-
-      // Loop de detección — cada 150ms para balance entre velocidad y CPU
-      let last = 0;
-      const detect = async (ts: number) => {
-        if (!mountedRef.current || scannedRef.current) return;
-        rafRef.current = requestAnimationFrame(detect);
-        if (ts - last < 150) return; // ~6fps es suficiente para lectura
-        last = ts;
-
-        const video = videoRef.current;
-        if (!video || video.readyState < 2 || video.videoWidth === 0) return;
-
-        try {
-          const barcodes = await detector.detect(video);
-          if (barcodes.length > 0 && barcodes[0].rawValue) {
-            handleFound(barcodes[0].rawValue);
-          }
-        } catch {}
-      };
-
-      rafRef.current = requestAnimationFrame(detect);
     };
 
-    start();
-    return () => { mountedRef.current = false; stopAll(); };
+    init();
+
+    return () => {
+      mountedRef.current = false;
+      stopScanner();
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const code = manualCode.trim();
-    if (code) { stopAll(); onScan(code); }
+    if (code) { stopScanner(); onScan(code); }
   };
 
   return (
     <>
+      {/* Backdrop */}
       <div className="fixed inset-0 z-50 bg-black/80" onClick={handleClose} />
 
+      {/* Sheet bottom en mobile, centrado en desktop */}
       <div
-        className="fixed bottom-0 left-0 right-0 z-50 bg-black rounded-t-3xl md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[420px] md:rounded-3xl overflow-hidden"
+        className="fixed bottom-0 left-0 right-0 z-50 bg-black rounded-t-3xl overflow-hidden md:bottom-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[420px] md:rounded-3xl"
+        style={{ maxHeight: '92vh' }}
         onClick={(e) => e.stopPropagation()}
-        style={{ maxHeight: '90vh' }}
       >
+        {/* Handle */}
+        <div className="mx-auto mt-3 h-1 w-12 rounded-full bg-white/20 md:hidden" />
+
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3 bg-black">
+        <div className="flex items-center justify-between px-5 py-3">
           <div className="flex items-center gap-2 text-white">
             <ScanLine className="h-5 w-5 text-green-400" />
             <span className="font-bold">Escanear código de barras</span>
           </div>
-          <button onClick={handleClose} className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-white text-lg font-bold hover:bg-white/20">✕</button>
+          <button
+            onClick={handleClose}
+            className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-white text-xl font-bold hover:bg-white/20 transition-colors"
+          >
+            ✕
+          </button>
         </div>
 
-        {/* VIDEO — siempre montado en el DOM */}
-        <div className="relative bg-black" style={{ aspectRatio: '4/3' }}>
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            className="w-full h-full object-cover"
-          />
+        {/* Contenedor del scanner — SIEMPRE en el DOM */}
+        <div className="relative">
+          {/* Loading overlay */}
+          {phase === 'loading' && (
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-black" style={{ minHeight: 220 }}>
+              <Loader2 className="h-10 w-10 text-green-400 animate-spin" />
+              <p className="text-white text-sm">Abriendo cámara…</p>
+              <p className="text-gray-400 text-xs">Aceptá el permiso de cámara si aparece</p>
+            </div>
+          )}
 
-          {/* Overlay oscuro con ventana de escaneo */}
+          {/* Error overlay */}
+          {phase === 'error' && (
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-black p-6" style={{ minHeight: 220 }}>
+              <p className="text-white text-sm text-center">No se pudo acceder a la cámara.</p>
+              <p className="text-gray-400 text-xs text-center mt-1">
+                Verificá en Ajustes del celular que el navegador tenga permiso de cámara.
+              </p>
+            </div>
+          )}
+
+          {/* Visor animado (visible solo al escanear) */}
           {phase === 'scanning' && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              {/* Esquinas del visor */}
-              <div className="relative w-72 h-28">
-                <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-green-400 rounded-tl-lg" />
-                <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-green-400 rounded-tr-lg" />
-                <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-green-400 rounded-bl-lg" />
-                <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-green-400 rounded-br-lg" />
-                {/* Línea de escaneo animada */}
-                <div className="absolute inset-x-0 h-0.5 bg-green-400 opacity-80" style={{ animation: 'scan 1.5s linear infinite', top: '50%' }} />
+            <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
+              <div className="relative w-64 h-24">
+                <div className="absolute top-0 left-0 w-7 h-7 border-t-4 border-l-4 border-green-400 rounded-tl-lg" />
+                <div className="absolute top-0 right-0 w-7 h-7 border-t-4 border-r-4 border-green-400 rounded-tr-lg" />
+                <div className="absolute bottom-0 left-0 w-7 h-7 border-b-4 border-l-4 border-green-400 rounded-bl-lg" />
+                <div className="absolute bottom-0 right-0 w-7 h-7 border-b-4 border-r-4 border-green-400 rounded-br-lg" />
+                <div className="absolute inset-x-4 h-0.5 bg-green-400" style={{ animation: 'scanline 1.8s ease-in-out infinite', top: '50%' }} />
               </div>
             </div>
           )}
 
-          {/* Estado inicial */}
-          {phase === 'starting' && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/60">
-              <Loader2 className="h-10 w-10 text-white animate-spin" />
-              <p className="text-white text-sm">Abriendo cámara…</p>
-            </div>
-          )}
-
-          {/* Error de cámara */}
-          {phase === 'error' && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/80 p-4">
-              <p className="text-white text-sm text-center">No se pudo acceder a la cámara.</p>
-              <p className="text-gray-400 text-xs text-center">Verificá que el navegador tiene permiso de cámara en los ajustes.</p>
-            </div>
-          )}
-
-          {/* Sin BarcodeDetector */}
-          {phase === 'no-detector' && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/80 p-4">
-              <p className="text-white text-sm text-center">Este navegador no soporta lectura automática.</p>
-              <p className="text-gray-400 text-xs text-center">Usá Chrome en Android para escaneo automático.</p>
-            </div>
-          )}
+          {/* El div que html5-qrcode controla — SIEMPRE montado */}
+          <div
+            id={CONTAINER_ID}
+            className="w-full"
+            style={{ minHeight: 220, background: '#000' }}
+          />
         </div>
 
         {/* Instrucción */}
         {phase === 'scanning' && (
-          <p className="text-center text-green-400 text-xs py-2 bg-black">
-            Apuntá el código de barras al rectángulo verde
+          <p className="text-center text-green-400 text-xs py-2 bg-black px-4">
+            Apuntá el código al rectángulo verde • iPhone, Android y más
           </p>
         )}
 
-        {/* Manual input */}
+        {/* Panel inferior */}
         <div className="bg-white px-5 py-4 space-y-3">
           {showManual && (
             <form onSubmit={handleManualSubmit} className="flex gap-2">
@@ -202,29 +186,38 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
                 placeholder="Escribí el código manualmente…"
                 value={manualCode}
                 onChange={(e) => setManualCode(e.target.value)}
-                className="flex-1 rounded-xl border px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="flex-1 rounded-xl border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
               />
-              <button type="submit" className="rounded-xl bg-green-600 px-4 text-sm font-bold text-white">Buscar</button>
+              <button type="submit" className="rounded-xl bg-green-600 px-4 text-sm font-bold text-white hover:bg-green-700">
+                Buscar
+              </button>
             </form>
           )}
 
           <div className="flex gap-2">
             <button
               onClick={() => setShowManual(!showManual)}
-              className="flex flex-1 items-center justify-center gap-2 rounded-2xl border py-2.5 text-sm font-semibold hover:bg-gray-50"
+              className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-gray-200 py-3 text-sm font-semibold hover:bg-gray-50 transition-colors"
             >
-              <Keyboard className="h-4 w-4" /> {showManual ? 'Ocultar manual' : 'Ingresar código'}
+              <Keyboard className="h-4 w-4" />
+              {showManual ? 'Ocultar manual' : 'Ingresar código'}
             </button>
-            <button onClick={handleClose} className="flex-1 rounded-2xl bg-gray-100 py-2.5 text-sm font-bold hover:bg-gray-200">Cancelar</button>
+            <button
+              onClick={handleClose}
+              className="flex-1 rounded-2xl bg-gray-100 py-3 text-sm font-bold hover:bg-gray-200 transition-colors"
+            >
+              Cancelar
+            </button>
           </div>
+          <p className="text-center text-xs text-gray-400">
+            Compatible con iPhone, Android y computadoras · EAN-13, EAN-8, Code128, QR
+          </p>
         </div>
 
-        {/* Animación CSS para la línea de escaneo */}
         <style>{`
-          @keyframes scan {
-            0% { top: 10%; }
-            50% { top: 90%; }
-            100% { top: 10%; }
+          @keyframes scanline {
+            0%, 100% { top: 15%; opacity: 1; }
+            50% { top: 85%; opacity: 0.7; }
           }
         `}</style>
       </div>
