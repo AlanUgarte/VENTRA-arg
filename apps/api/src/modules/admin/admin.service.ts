@@ -104,52 +104,49 @@ export class AdminService {
     page = 1,
     pageSize = 20,
   ) {
-    const where: any = {
-      ...(search && {
-        OR: [
-          { name: { contains: search, mode: 'insensitive' } },
-          { users: { some: { email: { contains: search, mode: 'insensitive' } } } },
-        ],
-      }),
-      ...(status && { subscription: { status } }),
-    };
+    const p = Number(page) || 1;
+    const ps = Number(pageSize) || 20;
 
-    const [total, tenants] = await Promise.all([
-      this.prisma.tenant.count({ where }),
-      this.prisma.tenant.findMany({
-        where,
-        select: {
-          id: true,
-          name: true,
-          slug: true,
-          createdAt: true,
-          subscription: { select: { plan: true, status: true } },
-          users: {
-            where: { role: 'OWNER' },
-            select: { name: true, email: true },
-            take: 1,
-          },
-        },
-        orderBy: { createdAt: 'desc' },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-      }),
-    ]);
+    // Simple query - avoid complex Prisma filters that may fail
+    const allTenants = await this.prisma.tenant.findMany({
+      include: {
+        subscription: { select: { plan: true, status: true } },
+        users: { where: { role: 'OWNER' }, select: { name: true, email: true }, take: 1 },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
 
-    // Add counts separately to avoid Prisma include+_count conflicts
-    const tenantsWithCounts = await Promise.all(
-      tenants.map(async (t) => {
-        const [userCount, saleCount, productCount, customerCount] = await Promise.all([
+    // Filter in memory to avoid complex Prisma where clauses
+    let filtered = allTenants;
+    if (search) {
+      const q = search.toLowerCase();
+      filtered = filtered.filter(
+        (t) =>
+          t.name.toLowerCase().includes(q) ||
+          t.users.some((u) => u.email.toLowerCase().includes(q)),
+      );
+    }
+    if (status) {
+      filtered = filtered.filter((t) => t.subscription?.status === status);
+    }
+
+    const total = filtered.length;
+    const data = filtered.slice((p - 1) * ps, p * ps);
+
+    // Add counts
+    const dataWithCounts = await Promise.all(
+      data.map(async (t) => {
+        const [users, sales, products, customers] = await Promise.all([
           this.prisma.user.count({ where: { tenantId: t.id } }),
           this.prisma.sale.count({ where: { tenantId: t.id } }),
-          this.prisma.product.count({ where: { tenantId: t.id, isActive: true } }),
+          this.prisma.product.count({ where: { tenantId: t.id } }),
           this.prisma.customer.count({ where: { tenantId: t.id } }),
         ]);
-        return { ...t, _count: { users: userCount, sales: saleCount, products: productCount, customers: customerCount } };
+        return { ...t, _count: { users, sales, products, customers } };
       }),
     );
 
-    return { total, page, pageSize, data: tenantsWithCounts };
+    return { total, page: p, pageSize: ps, data: dataWithCounts };
   }
 
   // ── Tenant detail ──────────────────────────────────────────────────────────
