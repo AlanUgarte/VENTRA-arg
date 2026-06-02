@@ -70,7 +70,10 @@ export default function PosPage() {
         setShowMobileCart(true); // Muestra el carrito automáticamente
       }
     } catch {
-      toast.error(`Código ${code} no encontrado. Verificá que el producto tenga ese código asignado.`);
+      toast.error(
+        `Código "${code}" no encontrado en tu inventario. Andá a Inventario → lápiz ✏️ del producto → completá el campo "Código de barras".`,
+        { duration: 6000 }
+      );
     }
   };
 
