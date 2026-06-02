@@ -85,6 +85,35 @@ export class AdminController {
     return this.service.setTenantStatus(id, dto.status, dto.plan, dto.reason);
   }
 
+  // ── User management per tenant ────────────────────────────────────────────
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  @SkipSubscription()
+  @Get('tenants/:id/users')
+  getTenantUsers(@Param('id') id: string) {
+    return this.service.getTenantUsers(id);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  @SkipSubscription()
+  @Patch('tenants/:id/users/:userId')
+  updateTenantUser(
+    @Param('id') tenantId: string,
+    @Param('userId') userId: string,
+    @Body('isActive') isActive: boolean,
+  ) {
+    return this.service.setTenantUserActive(tenantId, userId, isActive);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  @SkipSubscription()
+  @Delete('tenants/:id/users/:userId')
+  deleteTenantUser(@Param('id') tenantId: string, @Param('userId') userId: string) {
+    return this.service.deleteTenantUser(tenantId, userId);
+  }
+
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, SuperAdminGuard)
   @SkipSubscription()

@@ -218,6 +218,35 @@ export class AdminService {
     return { id, newStatus: status };
   }
 
+  // ── Users per tenant ──────────────────────────────────────────────────────
+
+  getTenantUsers(tenantId: string) {
+    return this.prisma.user.findMany({
+      where: { tenantId },
+      select: { id: true, name: true, email: true, role: true, isActive: true, createdAt: true },
+      orderBy: { createdAt: 'asc' },
+    });
+  }
+
+  async setTenantUserActive(tenantId: string, userId: string, isActive: boolean) {
+    const user = await this.prisma.user.findFirst({ where: { id: userId, tenantId } });
+    if (!user) throw new NotFoundException('Usuario no encontrado');
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { isActive },
+      select: { id: true, name: true, email: true, role: true, isActive: true },
+    });
+  }
+
+  async deleteTenantUser(tenantId: string, userId: string) {
+    const user = await this.prisma.user.findFirst({ where: { id: userId, tenantId } });
+    if (!user) throw new NotFoundException('Usuario no encontrado');
+    if (user.role === 'OWNER') throw new ForbiddenException('No se puede eliminar al dueño del negocio');
+    await this.prisma.refreshToken.deleteMany({ where: { userId } });
+    await this.prisma.user.delete({ where: { id: userId } });
+    return { deleted: true };
+  }
+
   // ── Block all users of a tenant ────────────────────────────────────────────
 
   async blockTenantUsers(tenantId: string, block: boolean) {

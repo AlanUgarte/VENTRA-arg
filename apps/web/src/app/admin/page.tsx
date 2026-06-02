@@ -38,14 +38,14 @@ export default function AdminDashboard() {
   const { data: activity } = useAdminActivity();
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-4 md:space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">Dashboard</h1>
         <p className="text-sm text-white/40 mt-0.5">Vista general de VENTRA ARG</p>
       </div>
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard
           label="MRR" value={money(stats?.mrr ?? 0)}
           icon={DollarSign} color="text-emerald-400" bg="bg-emerald-500/10"
@@ -68,7 +68,7 @@ export default function AdminDashboard() {
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard
           label="Usuarios totales" value={stats?.totalUsers ?? 0}
           icon={Users} color="text-violet-400" bg="bg-violet-500/10"

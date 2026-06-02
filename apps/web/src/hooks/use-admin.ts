@@ -75,6 +75,38 @@ export function useAdminActivity() {
   });
 }
 
+export function useTenantUsers(tenantId: string | null) {
+  return useQuery({
+    queryKey: ['admin', 'tenant-users', tenantId],
+    queryFn: async () => {
+      const { data } = await api.get(`/admin/tenants/${tenantId}/users`);
+      return data as Array<{ id: string; name: string; email: string; role: string; isActive: boolean; createdAt: string }>;
+    },
+    enabled: !!tenantId,
+  });
+}
+
+export function useUpdateTenantUser() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ tenantId, userId, isActive }: { tenantId: string; userId: string; isActive: boolean }) =>
+      api.patch(`/admin/tenants/${tenantId}/users/${userId}`, { isActive }),
+    onSuccess: (_d, v) => qc.invalidateQueries({ queryKey: ['admin', 'tenant-users', v.tenantId] }),
+  });
+}
+
+export function useDeleteTenantUser() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ tenantId, userId }: { tenantId: string; userId: string }) =>
+      api.delete(`/admin/tenants/${tenantId}/users/${userId}`),
+    onSuccess: (_d, v) => {
+      qc.invalidateQueries({ queryKey: ['admin', 'tenant-users', v.tenantId] });
+      qc.invalidateQueries({ queryKey: ['admin'] });
+    },
+  });
+}
+
 export function useSetTenantStatus() {
   const qc = useQueryClient();
   return useMutation({

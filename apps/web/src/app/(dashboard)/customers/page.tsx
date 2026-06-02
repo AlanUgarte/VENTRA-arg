@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { Search, Plus, Users, CreditCard, Wallet } from 'lucide-react';
+import { Search, Plus, Users, CreditCard, Wallet, Trash2 } from 'lucide-react';
 import { Topbar } from '@/components/layout/topbar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,8 @@ import { KpiCard } from '@/components/shared/kpi-card';
 import { EmptyState } from '@/components/shared/empty-state';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogBody } from '@/components/ui/dialog';
 import { useCustomers, useCustomer, useCreateCustomer, useCreateCustomerPayment } from '@/hooks/use-customers';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import api from '@/lib/api';
 import { money, fdate } from '@/lib/utils';
 
 export default function CustomersPage() {
@@ -29,6 +31,12 @@ export default function CustomersPage() {
   const { data: customerDetail } = useCustomer(viewId ?? '');
   const createCustomer = useCreateCustomer();
   const createPayment = useCreateCustomerPayment();
+  const qc = useQueryClient();
+  const deleteCustomer = useMutation({
+    mutationFn: (id: string) => api.patch(`/customers/${id}`, { isActive: false }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['customers'] }); toast.success('Cliente eliminado'); },
+    onError: () => toast.error('No se pudo eliminar el cliente'),
+  });
 
   const totalDebt = customers.reduce((s, c) => s + Math.max(0, c.balance), 0);
   const withDebt = customers.filter((c) => c.balance > 0.5).length;
@@ -111,13 +119,23 @@ export default function CustomersPage() {
                         </span>
                       </td>
                       <td className="px-4 py-2.5">
-                        <div className="flex gap-2 justify-end">
+                        <div className="flex gap-2 justify-end flex-wrap">
                           <Button size="sm" variant="outline" onClick={() => setViewId(c.id)}>Ver cuenta</Button>
                           {c.balance > 0.5 && (
                             <Button size="sm" onClick={() => { setShowPay(c.id); setPayAmount(String(Math.round(c.balance))); }}>
                               Cobrar
                             </Button>
                           )}
+                          <button
+                            className="rounded-lg p-1.5 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                            title="Eliminar cliente"
+                            onClick={() => {
+                              if (confirm(`¿Eliminar a "${c.name}"? Sus fiados y pagos quedan en el historial.`))
+                                deleteCustomer.mutate(c.id);
+                            }}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                         </div>
                       </td>
                     </tr>
