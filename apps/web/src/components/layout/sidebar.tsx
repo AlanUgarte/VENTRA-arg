@@ -15,6 +15,7 @@ const NAV = [
   { href: '/inventory', label: 'Inventario',        icon: Package,      roles: ['OWNER','ADMIN','CASHIER'] },
   { href: '/customers', label: 'Clientes / Fiados', icon: Users,        roles: ['OWNER','ADMIN','CASHIER'] },
   { href: '/suppliers', label: 'Proveedores',       icon: Truck,        roles: ['OWNER','ADMIN','CASHIER'] },
+  { href: '/returns',   label: 'Devoluciones',      icon: Package,      roles: ['OWNER','ADMIN'] },
   { href: '/reports',   label: 'Reportes',          icon: BarChart3,    roles: ['OWNER','ADMIN'] },
   { href: '/users',     label: 'Usuarios',          icon: Users,        roles: ['OWNER','ADMIN'] },
   { href: '/billing',   label: 'Suscripción',       icon: CreditCard,   roles: ['OWNER'] },
