@@ -118,9 +118,12 @@ export class AdminService {
       this.prisma.tenant.count({ where }),
       this.prisma.tenant.findMany({
         where,
-        include: {
-          subscription: true,
-          _count: { select: { users: true, sales: true, products: true, customers: true } },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          createdAt: true,
+          subscription: { select: { plan: true, status: true } },
           users: {
             where: { role: 'OWNER' },
             select: { name: true, email: true },
@@ -133,7 +136,20 @@ export class AdminService {
       }),
     ]);
 
-    return { total, page, pageSize, data: tenants };
+    // Add counts separately to avoid Prisma include+_count conflicts
+    const tenantsWithCounts = await Promise.all(
+      tenants.map(async (t) => {
+        const [userCount, saleCount, productCount, customerCount] = await Promise.all([
+          this.prisma.user.count({ where: { tenantId: t.id } }),
+          this.prisma.sale.count({ where: { tenantId: t.id } }),
+          this.prisma.product.count({ where: { tenantId: t.id, isActive: true } }),
+          this.prisma.customer.count({ where: { tenantId: t.id } }),
+        ]);
+        return { ...t, _count: { users: userCount, sales: saleCount, products: productCount, customers: customerCount } };
+      }),
+    );
+
+    return { total, page, pageSize, data: tenantsWithCounts };
   }
 
   // ── Tenant detail ──────────────────────────────────────────────────────────
