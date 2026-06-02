@@ -31,7 +31,6 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
           {
             fps: 15,
             qrbox: { width: 280, height: 120 },
-            supportedScanTypes: [], // Usa todos los formatos
           },
           async (decodedText) => {
             if (!mountedRef.current) return;
