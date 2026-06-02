@@ -80,12 +80,25 @@ export default function ReportsPage() {
             <CardContent className="pt-4">
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={rotation} layout="vertical" margin={{ left: 8 }}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                    <XAxis type="number" tick={{ fontSize: 11 }} />
-                    <YAxis type="category" dataKey="name" tick={{ fontSize: 11 }} width={110} />
-                    <Tooltip formatter={(v: number) => [`${v} u.`, 'Vendidas']} />
-                    <Bar dataKey="units" fill="#0d9f6e" radius={[0, 6, 6, 0]} barSize={14} />
+                  <BarChart data={rotation} layout="vertical" margin={{ left: 8, right: 16, top: 4, bottom: 4 }}>
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="hsl(var(--border))" />
+                    <XAxis
+                      type="number"
+                      tick={{ fontSize: 10 }}
+                      tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v}
+                    />
+                    <YAxis
+                      type="category"
+                      dataKey="name"
+                      tick={{ fontSize: 11 }}
+                      width={120}
+                      tickFormatter={(v: string) => v.length > 16 ? v.slice(0, 14) + '…' : v}
+                    />
+                    <Tooltip
+                      contentStyle={{ borderRadius: 12, fontSize: 12 }}
+                      formatter={(v: number) => [`${v} unidades`, 'Vendidas']}
+                    />
+                    <Bar dataKey="units" fill="#0d9f6e" radius={[0, 6, 6, 0]} barSize={16} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -101,13 +114,28 @@ export default function ReportsPage() {
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={rubros} dataKey="revenue" nameKey="rubro" cx="50%" cy="50%" innerRadius={55} outerRadius={90}>
+                    <Pie
+                      data={rubros}
+                      dataKey="revenue"
+                      nameKey="rubro"
+                      cx="50%" cy="50%"
+                      innerRadius={50} outerRadius={80}
+                      label={({ rubro, percent }) => percent > 0.05 ? `${(percent * 100).toFixed(0)}%` : ''}
+                      labelLine={false}
+                    >
                       {rubros.map((entry: any) => (
                         <Cell key={entry.rubro} fill={RUBRO_COLORS[entry.rubro] ?? '#888'} />
                       ))}
                     </Pie>
-                    <Tooltip formatter={(v: number) => money(v)} />
-                    <Legend formatter={(v) => <span className="text-xs">{v}</span>} />
+                    <Tooltip
+                      contentStyle={{ borderRadius: 12, fontSize: 12 }}
+                      formatter={(v: number, name: string) => [money(v), name]}
+                    />
+                    <Legend
+                      iconType="circle"
+                      iconSize={8}
+                      formatter={(v) => <span className="text-xs">{v}</span>}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
@@ -115,34 +143,62 @@ export default function ReportsPage() {
           </Card>
         </div>
 
-        {/* Rubro table + history */}
+        {/* Revenue por rubro + history */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
-            <div className="border-b border-border px-5 py-3.5"><h3 className="font-bold">Desglose por rubro</h3></div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border">
-                    {['Rubro', 'Unidades', 'Facturado', 'Ganancia'].map((h) => (
-                      <th key={h} className="px-4 py-2 text-left text-[10px] font-bold uppercase tracking-wide text-muted-foreground">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {rubros.map((r: any) => (
-                    <tr key={r.rubro} className="border-b border-border/50">
-                      <td className="px-4 py-2 font-semibold flex items-center gap-2">
-                        <span className="inline-block h-2 w-2 rounded-full" style={{ background: RUBRO_COLORS[r.rubro] ?? '#888' }} />
-                        {r.rubro}
-                      </td>
-                      <td className="px-4 py-2">{r.units}</td>
-                      <td className="px-4 py-2 font-mono">{money(r.revenue)}</td>
-                      <td className="px-4 py-2 font-mono text-primary">{money(r.ganancia)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="border-b border-border px-5 py-3.5">
+              <h3 className="font-bold">Revenue por rubro</h3>
             </div>
+            <CardContent className="pt-4">
+              {rubros.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">Sin ventas en el período</p>
+              ) : (
+                <>
+                  <div className="h-52">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={rubros} margin={{ top: 4, right: 16, bottom: 0, left: 8 }}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                        <XAxis
+                          dataKey="rubro"
+                          tick={{ fontSize: 10 }}
+                          tickFormatter={(v: string) => v.length > 8 ? v.slice(0, 7) + '.' : v}
+                        />
+                        <YAxis
+                          tick={{ fontSize: 10 }}
+                          tickFormatter={(v) => v >= 1000000 ? `${(v/1000000).toFixed(1)}M` : v >= 1000 ? `${(v/1000).toFixed(0)}k` : v}
+                          width={46}
+                        />
+                        <Tooltip
+                          contentStyle={{ borderRadius: 12, fontSize: 12 }}
+                          formatter={(v: number) => [money(v), 'Facturado']}
+                        />
+                        <Bar dataKey="revenue" radius={[6, 6, 0, 0]} barSize={28}>
+                          {rubros.map((r: any) => (
+                            <Cell key={r.rubro} fill={RUBRO_COLORS[r.rubro] ?? '#888'} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  {/* Mini table */}
+                  <div className="mt-3 space-y-1.5">
+                    {rubros.map((r: any) => (
+                      <div key={r.rubro} className="flex items-center justify-between text-xs">
+                        <span className="flex items-center gap-1.5 font-medium">
+                          <span className="h-2 w-2 rounded-full flex-shrink-0" style={{ background: RUBRO_COLORS[r.rubro] ?? '#888' }} />
+                          {r.rubro}
+                        </span>
+                        <div className="flex gap-4 font-mono">
+                          <span className="text-muted-foreground">{r.units} u.</span>
+                          <span className="font-semibold">{money(r.revenue)}</span>
+                          <span className="text-primary">{money(r.ganancia)}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </CardContent>
           </Card>
 
           <Card>
