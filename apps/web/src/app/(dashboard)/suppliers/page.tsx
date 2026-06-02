@@ -94,17 +94,17 @@ export default function SuppliersPage() {
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Proveedores" subtitle="Facturas recibidas, condiciones y pagos" />
-      <div className="p-5 space-y-4">
-        <div className="grid grid-cols-4 gap-3">
+      <div className="p-3 md:p-5 space-y-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <KpiCard label="Total adeudado" value={money(totalDebt)} icon={DollarSign} color="text-accent" bg="bg-accent/10" sub={`${pending} facturas pendientes`} />
           <KpiCard label="Vencido" value={money(overdue)} icon={AlertCircle} color="text-destructive" bg="bg-destructive/10" sub="Requiere atención" />
           <KpiCard label="Proveedores" value={String(suppliers.length)} icon={Truck} sub="Registrados" />
           <KpiCard label="Facturas" value={String(invoices.length)} icon={CheckCircle} sub="Total registradas" />
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex flex-col md:flex-row gap-4">
           {/* Suppliers list */}
-          <Card className="w-72 flex-shrink-0">
+          <Card className="w-full md:w-72 flex-shrink-0">
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
               <h3 className="font-bold text-sm">Proveedores</h3>
               <Button size="sm" variant="outline" onClick={() => setShowNewSupplier(true)}>

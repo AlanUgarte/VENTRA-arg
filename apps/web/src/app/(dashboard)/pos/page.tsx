@@ -26,6 +26,7 @@ export default function PosPage() {
   const [receiptCanvas, setReceiptCanvas] = useState<HTMLCanvasElement | null>(null);
   const [showFiarModal, setShowFiarModal] = useState(false);
   const [selectedCustomerId, setSelectedCustomerId] = useState('');
+  const [showMobileCart, setShowMobileCart] = useState(false);
 
   const { data: products = [], isLoading } = useProducts();
   const { data: rubros = [] } = useRubros();
@@ -96,6 +97,7 @@ export default function PosPage() {
       setReceiptCanvas(canvas);
       clear();
       setShowFiarModal(false);
+      setShowMobileCart(false);
     } catch (err: any) {
       toast.error(err.response?.data?.message ?? 'Error al procesar la venta');
     }
@@ -115,9 +117,22 @@ export default function PosPage() {
     <div className="flex flex-col flex-1 overflow-hidden">
       <Topbar title="Punto de venta" subtitle="Armá el ticket y generá la venta" />
 
-      <div className="flex flex-1 overflow-hidden p-5 gap-4">
-        {/* Products panel */}
-        <div className="flex flex-1 flex-col min-w-0 gap-3">
+      {/* Mobile cart toggle */}
+      <div className="md:hidden border-b border-border bg-card px-4 py-2 flex items-center justify-between">
+        <span className="text-sm font-semibold">
+          {items.length > 0 ? `${items.reduce((s,i)=>s+i.quantity,0)} artículos en ticket` : 'Ticket vacío'}
+        </span>
+        <button
+          className={`rounded-xl px-3 py-1.5 text-xs font-bold transition-colors ${showMobileCart ? 'bg-primary text-white' : 'bg-muted text-foreground'}`}
+          onClick={() => setShowMobileCart(v => !v)}
+        >
+          {showMobileCart ? '← Ver productos' : `Ver ticket ${items.length > 0 ? `(${money(total)})` : ''}`}
+        </button>
+      </div>
+
+      <div className="flex flex-1 overflow-hidden md:p-5 md:gap-4">
+        {/* Products panel — hidden on mobile when cart is shown */}
+        <div className={`flex flex-1 flex-col min-w-0 gap-3 p-3 md:p-0 ${showMobileCart ? 'hidden md:flex' : 'flex'}`}>
           {/* Controls */}
           <div className="flex flex-wrap gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm">
             <div className="relative flex-1 min-w-48">
@@ -187,7 +202,7 @@ export default function PosPage() {
           {/* Product grid */}
           <div className="flex-1 overflow-y-auto">
             {isLoading ? (
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(190px,1fr))] gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(170px,1fr))] gap-3">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div key={i} className="h-36 animate-pulse rounded-2xl bg-muted" />
                 ))}
@@ -195,7 +210,7 @@ export default function PosPage() {
             ) : !filtered.length ? (
               <EmptyState title="Sin artículos" description="Ajustá el filtro o agregá productos" />
             ) : (
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(190px,1fr))] gap-3 pb-4">
+              <div className="grid grid-cols-2 sm:grid-cols-[repeat(auto-fill,minmax(170px,1fr))] gap-3 pb-4">
                 {filtered.map((p) => {
                   const inCart = items.find((i) => i.productId === p.id);
                   const available = p.stock - (inCart?.quantity ?? 0);
@@ -260,8 +275,8 @@ export default function PosPage() {
           </div>
         </div>
 
-        {/* Cart */}
-        <div className="flex w-[320px] flex-shrink-0 flex-col rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
+        {/* Cart — full screen on mobile when showMobileCart, fixed width on desktop */}
+        <div className={`flex flex-shrink-0 flex-col border border-border bg-card shadow-sm overflow-hidden ${showMobileCart ? 'flex flex-1 rounded-none md:rounded-2xl md:w-[320px] md:flex-none' : 'hidden md:flex md:w-[320px] rounded-2xl'}`}>
           <div className="flex items-center justify-between border-b border-border px-4 py-3">
             <h3 className="flex items-center gap-2 font-bold">
               <ShoppingCart className="h-4 w-4" />

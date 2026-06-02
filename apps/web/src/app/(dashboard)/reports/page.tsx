@@ -36,7 +36,7 @@ export default function ReportsPage() {
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Reportes" subtitle="Facturación, ganancia y rotación" />
-      <div className="p-5 space-y-5">
+      <div className="p-3 md:p-5 space-y-4 md:space-y-5">
         {/* Date filter */}
         <div className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 shadow-sm">
           <span className="text-sm font-semibold text-muted-foreground">Período:</span>
@@ -61,7 +61,7 @@ export default function ReportsPage() {
         </div>
 
         {/* KPIs */}
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 xl:grid-cols-6">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
           <KpiCard label="Facturación" value={money(overview?.totalFacturado ?? 0)} icon={DollarSign} color="text-blue-600" bg="bg-blue-100" sub={`${overview?.totalUnidades ?? 0} unidades`} />
           <KpiCard label="Ganancia neta" value={money(overview?.totalGanancia ?? 0)} icon={TrendingUp} sub={`Margen ${overview?.margenPct ?? 0}%`} />
           <KpiCard label="Costo invertido" value={money(overview?.totalCosto ?? 0)} icon={ShoppingBag} color="text-yellow-600" bg="bg-yellow-100" sub="Mercadería vendida" />
@@ -71,7 +71,7 @@ export default function ReportsPage() {
         </div>
 
         {/* Charts */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Rotation */}
           <Card>
             <div className="border-b border-border px-5 py-3.5">
@@ -116,7 +116,7 @@ export default function ReportsPage() {
         </div>
 
         {/* Rubro table + history */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
             <div className="border-b border-border px-5 py-3.5"><h3 className="font-bold">Desglose por rubro</h3></div>
             <div className="overflow-x-auto">

@@ -105,9 +105,9 @@ export default function InventoryPage() {
     <div className="flex flex-col flex-1">
       <Topbar title="Inventario" subtitle="Artículos, precios y stock" />
 
-      <div className="flex gap-5 p-5">
+      <div className="flex flex-col md:flex-row gap-4 p-3 md:p-5">
         {/* Form */}
-        <Card className="w-[360px] flex-shrink-0">
+        <Card className="w-full md:w-[360px] flex-shrink-0">
           <CardContent className="pt-5">
             <h3 className="mb-4 flex items-center gap-2 font-bold">
               <Plus className="h-4 w-4 text-primary" />

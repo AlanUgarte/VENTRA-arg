@@ -59,8 +59,8 @@ export default function CustomersPage() {
   return (
     <div className="flex flex-col flex-1">
       <Topbar title="Clientes / Fiados" subtitle="Cuentas corrientes revaluadas al precio actual" />
-      <div className="p-5 space-y-4">
-        <div className="grid grid-cols-3 gap-3">
+      <div className="p-3 md:p-5 space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <KpiCard label="Total por cobrar" value={money(totalDebt)} icon={Wallet} color="text-violet-600" bg="bg-violet-100" sub="Cuentas corrientes" />
           <KpiCard label="Clientes con deuda" value={String(withDebt)} icon={CreditCard} color="text-accent" bg="bg-accent/10" sub={`${customers.length} clientes totales`} />
           <KpiCard label="Clientes activos" value={String(customers.length)} icon={Users} sub="Registrados" />
