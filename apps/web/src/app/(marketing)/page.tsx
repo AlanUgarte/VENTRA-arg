@@ -1,146 +1,140 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
-import {
-  ShoppingCart, FileImage, Package, Users, Truck, BarChart3,
-  Check, ChevronDown, TrendingUp, Wifi,
-} from 'lucide-react';
+import { Check, ChevronDown, TrendingUp } from 'lucide-react';
 
 const PRIMARY = '#0d9f6e';
-const ACCENT = '#f0653e';
+const ACCENT  = '#f0653e';
 
 const FEATURES = [
-  {
-    icon: ShoppingCart,
-    title: 'Caja con ticket',
-    desc: 'Sumás los productos al ticket del cliente, aplicás descuento y generás la venta. El stock se descuenta solo.',
-    color: PRIMARY,
-    bg: '#e2f4ec',
-  },
-  {
-    icon: FileImage,
-    title: 'Comprobante en imagen',
-    desc: 'Cada venta genera un comprobante que descargás o compartís por WhatsApp. Lo abre cualquiera, desde el celu o la PC.',
-    color: ACCENT,
-    bg: '#fdeae3',
-  },
-  {
-    icon: Package,
-    title: 'Inventario y stock',
-    desc: 'Cargás artículos por rubro con costo, descuento y ganancia. Editás precios cuando querés y controlás lo que queda.',
-    color: '#9a6c00',
-    bg: '#fdf2d8',
-  },
-  {
-    icon: Users,
-    title: 'Clientes y fiados',
-    desc: 'Llevás la cuenta de quién te debe, buscás por nombre y si cambiás un precio, la deuda se ajusta al valor de hoy.',
-    color: '#7c5cff',
-    bg: '#efeaff',
-  },
-  {
-    icon: Truck,
-    title: 'Pago a proveedores',
-    desc: 'Cargás facturas con su condición y vencimiento, anotás cada pago y ves el saldo en cuenta corriente.',
-    color: '#2f6fed',
-    bg: '#e8f0fe',
-  },
-  {
-    icon: BarChart3,
-    title: 'Reportes y gráficos',
-    desc: 'Mirás cuánto facturaste, tu ganancia neta y qué productos tienen más rotación, con gráficos claros.',
-    color: '#06b6d4',
-    bg: '#e0f7fb',
-  },
+  { title: 'Caja con ticket',        desc: 'Sumás los productos, aplicás descuento y generás la venta. El stock se descuenta solo.',             color: PRIMARY, bg: '#e2f4ec' },
+  { title: 'Comprobante en imagen',  desc: 'Cada venta genera un comprobante que compartís por WhatsApp. Lo abre cualquiera desde el celu.',     color: ACCENT,  bg: '#fdeae3' },
+  { title: 'Inventario y stock',     desc: 'Cargás artículos por rubro con costo y ganancia. Editás precios cuando querés.',                      color: '#9a6c00',bg: '#fdf2d8' },
+  { title: 'Clientes y fiados',      desc: 'Llevás la cuenta de quién te debe. Si cambiás un precio, la deuda se ajusta al valor de hoy.',       color: '#7c5cff',bg: '#efeaff' },
+  { title: 'Pago a proveedores',     desc: 'Cargás facturas con su condición y vencimiento, anotás cada pago y ves el saldo en cuenta corriente.',color: '#2f6fed',bg: '#e8f0fe' },
+  { title: 'Reportes y gráficos',    desc: 'Mirás cuánto facturaste, tu ganancia neta y qué productos tienen más rotación.',                      color: '#06b6d4',bg: '#e0f7fb' },
 ];
 
 const FAQS = [
-  { q: '¿Necesito instalar algo?', a: 'No. Funciona desde el navegador en cualquier compu, tablet o celular. Solo entrás con tu usuario.' },
-  { q: '¿Puede usarlo más de una persona a la vez?', a: 'Sí. Creás un usuario por persona y todos pueden trabajar al mismo tiempo desde distintos dispositivos.' },
-  { q: 'Si cambio un precio, ¿se actualiza lo que me deben?', a: 'Exacto. Los fiados se calculan al precio del día, así que si subiste el precio de un artículo, la deuda del cliente queda al valor actualizado.' },
-  { q: '¿Cómo es la prueba gratis?', a: 'Creás tu usuario y tenés 3 días para usar todo sin límites. Si te sirve, continuás con el plan mensual.' },
+  { q: '¿Necesito instalar algo?',                          a: 'No. Funciona desde el navegador en cualquier compu, tablet o celular.' },
+  { q: '¿Puede usarlo más de una persona a la vez?',        a: 'Sí, con el Plan PRO tenés hasta 3 usuarios. Cada uno con su contraseña.' },
+  { q: 'Si cambio un precio, ¿se actualiza lo que me deben?', a: 'Exacto. Los fiados se calculan al precio del día.' },
+  { q: '¿Cómo es la prueba gratis?',                        a: '3 días con todo habilitado, sin tarjeta. Si te sirve, elegís tu plan.' },
 ];
 
 export default function LandingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [mobileNav, setMobileNav] = useState(false);
 
   return (
-    <div style={{ fontFamily: 'var(--font-hanken), system-ui, sans-serif', color: '#1a1c1a', background: '#fbf8f1', lineHeight: 1.55, overflowX: 'hidden' }}>
+    <div className="font-sans antialiased" style={{ background: '#fbf8f1', color: '#1a1c1a' }}>
 
       {/* NAV */}
-      <nav style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(251,248,241,.88)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e7e0d2' }}>
-        <div style={{ maxWidth: 1180, margin: '0 auto', padding: '0 clamp(18px,4vw,40px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 66 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 800, fontSize: 19 }}>
-            <span style={{ width: 36, height: 36, borderRadius: 10, background: 'linear-gradient(135deg,#0d9f6e,#12c98a)', display: 'grid', placeItems: 'center', color: '#053b2b', fontWeight: 900, fontSize: 19, boxShadow: '0 6px 14px rgba(13,159,110,.35)' }}>A</span>
-            Almacén
+      <nav className="sticky top-0 z-50 border-b" style={{ background: 'rgba(251,248,241,.92)', backdropFilter: 'blur(12px)', borderColor: '#e7e0d2' }}>
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="flex h-16 items-center justify-between">
+            {/* Logo */}
+            <div className="flex items-center gap-2.5 font-extrabold text-lg">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl text-lg font-black" style={{ background: 'linear-gradient(135deg,#0d9f6e,#12c98a)', color: '#053b2b', boxShadow: '0 6px 14px rgba(13,159,110,.35)' }}>A</span>
+              Almacén
+            </div>
+
+            {/* Desktop links */}
+            <div className="hidden items-center gap-6 md:flex">
+              <a href="#funciones" className="text-sm font-semibold" style={{ color: '#5d6b5f' }}>Funciones</a>
+              <a href="#precio"    className="text-sm font-semibold" style={{ color: '#5d6b5f' }}>Precio</a>
+              <a href="#faq"       className="text-sm font-semibold" style={{ color: '#5d6b5f' }}>Preguntas</a>
+              <Link href="/login"  className="text-sm font-semibold" style={{ color: '#5d6b5f' }}>Entrar</Link>
+              <Link href="/register" className="rounded-xl px-4 py-2 text-sm font-bold text-white" style={{ background: PRIMARY, boxShadow: '0 6px 16px rgba(13,159,110,.28)' }}>
+                Probar gratis
+              </Link>
+            </div>
+
+            {/* Mobile hamburger */}
+            <button className="flex h-9 w-9 flex-col items-center justify-center gap-1.5 rounded-xl border md:hidden" style={{ borderColor: '#e7e0d2' }} onClick={() => setMobileNav(v => !v)}>
+              <span className={`block h-0.5 w-5 bg-current transition-all ${mobileNav ? 'translate-y-2 rotate-45' : ''}`} />
+              <span className={`block h-0.5 w-5 bg-current transition-all ${mobileNav ? 'opacity-0' : ''}`} />
+              <span className={`block h-0.5 w-5 bg-current transition-all ${mobileNav ? '-translate-y-2 -rotate-45' : ''}`} />
+            </button>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-            <a href="#funciones" style={{ fontSize: 14, fontWeight: 600, color: '#5d6b5f', textDecoration: 'none' }}>Funciones</a>
-            <a href="#precio" style={{ fontSize: 14, fontWeight: 600, color: '#5d6b5f', textDecoration: 'none' }}>Precio</a>
-            <a href="#faq" style={{ fontSize: 14, fontWeight: 600, color: '#5d6b5f', textDecoration: 'none' }}>Preguntas</a>
-            <Link href="/login" style={{ fontSize: 14, fontWeight: 600, color: '#5d6b5f', textDecoration: 'none' }}>Entrar</Link>
-            <Link href="/register" style={{ background: PRIMARY, color: '#fff', borderRadius: 12, padding: '10px 18px', fontSize: 14, fontWeight: 700, textDecoration: 'none', boxShadow: '0 8px 20px rgba(13,159,110,.28)' }}>
-              Probar gratis
-            </Link>
-          </div>
+
+          {/* Mobile menu */}
+          {mobileNav && (
+            <div className="border-t pb-4 pt-2 md:hidden" style={{ borderColor: '#e7e0d2' }}>
+              {['#funciones|Funciones','#precio|Precio','#faq|Preguntas'].map(item => {
+                const [href, label] = item.split('|');
+                return (
+                  <a key={href} href={href} onClick={() => setMobileNav(false)}
+                    className="block px-2 py-3 text-sm font-semibold" style={{ color: '#5d6b5f' }}>
+                    {label}
+                  </a>
+                );
+              })}
+              <div className="mt-2 flex flex-col gap-2">
+                <Link href="/login" className="rounded-xl border px-4 py-3 text-center text-sm font-bold" style={{ borderColor: '#e7e0d2' }} onClick={() => setMobileNav(false)}>Iniciar sesión</Link>
+                <Link href="/register" className="rounded-xl px-4 py-3 text-center text-sm font-bold text-white" style={{ background: PRIMARY }} onClick={() => setMobileNav(false)}>Probar gratis 3 días</Link>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
       {/* HERO */}
-      <section style={{ padding: 'clamp(50px,8vw,96px) clamp(18px,4vw,40px) clamp(40px,6vw,70px)', maxWidth: 1180, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.05fr .95fr', gap: 'clamp(30px,5vw,60px)', alignItems: 'center' }}>
+      <section className="mx-auto max-w-6xl px-4 pb-12 pt-10 sm:px-6 sm:pt-16">
+        <div className="grid gap-10 md:grid-cols-2 md:items-center md:gap-12">
           <div>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#e2f4ec', color: '#0a7e57', fontWeight: 700, fontSize: 13, padding: '7px 14px', borderRadius: 30, border: '1px solid #bfe8d6', marginBottom: 20 }}>
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: PRIMARY, boxShadow: '0 0 0 3px rgba(13,159,110,.25)' }} />
-              Hecho para kioscos y almacenes de barrio
+            <span className="mb-4 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-bold" style={{ background: '#e2f4ec', color: '#0a7e57', borderColor: '#bfe8d6' }}>
+              <span className="h-1.5 w-1.5 rounded-full" style={{ background: PRIMARY }} />
+              Para kioscos y almacenes de barrio
             </span>
-            <h1 style={{ fontFamily: 'var(--font-fraunces), Georgia, serif', fontWeight: 700, fontSize: 'clamp(38px,6.2vw,68px)', lineHeight: 1.02, letterSpacing: '-.02em', margin: '0 0 18px' }}>
-              Tu kiosco, <em style={{ fontStyle: 'italic', color: PRIMARY }}>ordenado</em> y bajo control.
+            <h1 className="mt-3 font-serif text-4xl font-bold leading-tight tracking-tight sm:text-5xl md:text-6xl" style={{ letterSpacing: '-.02em' }}>
+              Tu kiosco, <em className="not-italic" style={{ color: PRIMARY }}>ordenado</em> y bajo control.
             </h1>
-            <p style={{ fontSize: 'clamp(16px,2.2vw,19px)', color: '#5d6b5f', maxWidth: 520, marginBottom: 28 }}>
-              Cargá tus productos, cobrá en segundos con ticket y comprobante, llevá el stock, los fiados y los pagos a proveedores. Todo desde la compu o el celular.
+            <p className="mt-4 text-lg leading-relaxed sm:mt-5" style={{ color: '#5d6b5f' }}>
+              Cargá tus productos, cobrá con ticket, llevá el stock, los fiados y los pagos a proveedores. Todo desde la compu o el celular.
             </p>
-            <div style={{ display: 'flex', gap: 13, flexWrap: 'wrap', alignItems: 'center' }}>
-              <Link href="/register" style={{ background: PRIMARY, color: '#fff', borderRadius: 14, padding: '15px 28px', fontSize: 16.5, fontWeight: 700, textDecoration: 'none', boxShadow: '0 8px 20px rgba(13,159,110,.28)' }}>
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <Link href="/register" className="rounded-2xl px-6 py-4 text-center text-base font-bold text-white shadow-lg" style={{ background: PRIMARY, boxShadow: '0 8px 24px rgba(13,159,110,.3)' }}>
                 Probar gratis 3 días
               </Link>
-              <Link href="/login" style={{ background: '#fff', color: '#1a1c1a', borderRadius: 14, padding: '15px 28px', fontSize: 16.5, fontWeight: 700, border: '1.5px solid #e7e0d2', textDecoration: 'none' }}>
+              <Link href="/login" className="rounded-2xl border px-6 py-4 text-center text-base font-bold" style={{ borderColor: '#e7e0d2', background: '#fff' }}>
                 Iniciar sesión →
               </Link>
             </div>
-            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginTop: 26, color: '#5d6b5f', fontSize: 13.5, fontWeight: 600 }}>
-              {['Sin instalar nada', 'Funciona en el celular', '3 días gratis'].map((t) => (
-                <span key={t} style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                  <Check size={16} style={{ stroke: PRIMARY }} /> {t}
+            <div className="mt-5 flex flex-wrap gap-4 text-sm font-semibold" style={{ color: '#5d6b5f' }}>
+              {['Sin instalar nada', 'Funciona en el celular', '3 días gratis'].map(t => (
+                <span key={t} className="flex items-center gap-1.5">
+                  <Check size={15} style={{ stroke: PRIMARY }} /> {t}
                 </span>
               ))}
             </div>
           </div>
-          {/* Mock */}
-          <div style={{ background: '#fff', borderRadius: 18, boxShadow: '0 30px 70px rgba(26,28,26,.16)', border: '1px solid #e7e0d2', overflow: 'hidden', transform: 'rotate(.6deg)' }}>
+
+          {/* Mock — hidden on small mobile */}
+          <div className="hidden sm:block" style={{ borderRadius: 18, overflow: 'hidden', background: '#fff', boxShadow: '0 30px 70px rgba(26,28,26,.16)', border: '1px solid #e7e0d2', transform: 'rotate(.5deg)' }}>
             <div style={{ height: 38, background: '#11161d', display: 'flex', alignItems: 'center', gap: 7, padding: '0 14px' }}>
-              {['#ff5f57','#febc2e','#28c840'].map((c) => <i key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c, display: 'block' }} />)}
+              {['#ff5f57','#febc2e','#28c840'].map(c => <i key={c} style={{ width: 11, height: 11, borderRadius: '50%', background: c, display: 'block' }} />)}
               <span style={{ marginLeft: 10, color: '#8a93a3', fontSize: 11, fontFamily: 'monospace' }}>almacén · punto de venta</span>
             </div>
             <div style={{ display: 'flex' }}>
-              <div style={{ width: 54, background: '#11161d', padding: '14px 0', display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'center' }}>
-                {[true,false,false,false,false].map((on, i) => <i key={i} style={{ width: 24, height: 24, borderRadius: 7, background: on ? PRIMARY : 'rgba(255,255,255,.08)', display: 'block' }} />)}
+              <div style={{ width: 52, background: '#11161d', padding: '14px 0', display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'center' }}>
+                {[true,false,false,false].map((on, i) => <i key={i} style={{ width: 22, height: 22, borderRadius: 7, background: on ? PRIMARY : 'rgba(255,255,255,.08)', display: 'block' }} />)}
               </div>
-              <div style={{ flex: 1, padding: 16, background: '#f3f5f8' }}>
-                <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-                  {[{l:'Facturado',v:'$84.300',c:'#1a1c1a'},{l:'Ganancia',v:'$25.100',c:PRIMARY},{l:'Por cobrar',v:'$4.745',c:ACCENT}].map((k) => (
-                    <div key={k.l} style={{ flex: 1, background: '#fff', border: '1px solid #e6eaf0', borderRadius: 10, padding: 9 }}>
-                      <b style={{ fontSize: 9, color: '#8a93a3', textTransform: 'uppercase', letterSpacing: '.04em' }}>{k.l}</b>
-                      <div style={{ fontFamily: 'monospace', fontWeight: 600, fontSize: 15, marginTop: 2, color: k.c }}>{k.v}</div>
+              <div style={{ flex: 1, padding: 14, background: '#f3f5f8' }}>
+                <div style={{ display: 'flex', gap: 8, marginBottom: 10 }}>
+                  {[{l:'Facturado',v:'$84.300',c:'#1a1c1a'},{l:'Ganancia',v:'$25.100',c:PRIMARY},{l:'Por cobrar',v:'$4.745',c:ACCENT}].map(k => (
+                    <div key={k.l} style={{ flex: 1, background: '#fff', border: '1px solid #e6eaf0', borderRadius: 9, padding: 8 }}>
+                      <b style={{ fontSize: 8, color: '#8a93a3', textTransform: 'uppercase' }}>{k.l}</b>
+                      <div style={{ fontFamily: 'monospace', fontWeight: 600, fontSize: 13, marginTop: 2, color: k.c }}>{k.v}</div>
                     </div>
                   ))}
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-                  {[['Galletitas','Surtidas','$2.465'],['Bebidas','Gaseosa 2,25L','$3.780'],['Alimentos','Leche 1L','$1.250']].map(([r,n,p]) => (
-                    <div key={n} style={{ background: '#fff', border: '1px solid #e6eaf0', borderRadius: 9, padding: 9 }}>
-                      <span style={{ fontSize: 8, color: '#0a7e57', background: '#e2f4ec', padding: '2px 6px', borderRadius: 10, fontWeight: 700 }}>{r}</span>
-                      <div style={{ fontSize: 11, fontWeight: 700, margin: '6px 0 3px' }}>{n}</div>
-                      <div style={{ fontFamily: 'monospace', fontWeight: 600, fontSize: 13 }}>{p}</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 7 }}>
+                  {[['Bebidas','Gaseosa','$3.780'],['Alimentos','Leche 1L','$1.250'],['Galletitas','Surtidas','$2.465']].map(([r,n,p]) => (
+                    <div key={n} style={{ background: '#fff', border: '1px solid #e6eaf0', borderRadius: 8, padding: 8 }}>
+                      <span style={{ fontSize: 8, color: '#0a7e57', background: '#e2f4ec', padding: '1px 5px', borderRadius: 8, fontWeight: 700 }}>{r}</span>
+                      <div style={{ fontSize: 10, fontWeight: 700, margin: '5px 0 2px' }}>{n}</div>
+                      <div style={{ fontFamily: 'monospace', fontWeight: 600, fontSize: 12 }}>{p}</div>
                     </div>
                   ))}
                 </div>
@@ -151,54 +145,54 @@ export default function LandingPage() {
       </section>
 
       {/* FEATURES */}
-      <section id="funciones" style={{ padding: 'clamp(48px,7vw,84px) clamp(18px,4vw,40px)', maxWidth: 1180, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto clamp(34px,5vw,52px)' }}>
-          <span style={{ fontWeight: 800, fontSize: 13, letterSpacing: '.12em', textTransform: 'uppercase', color: ACCENT }}>Todo en un solo lugar</span>
-          <h2 style={{ fontFamily: 'var(--font-fraunces),Georgia,serif', fontWeight: 700, fontSize: 'clamp(28px,4.2vw,44px)', lineHeight: 1.08, letterSpacing: '-.02em', margin: '12px 0 14px' }}>Lo que podés hacer</h2>
-          <p style={{ fontSize: 'clamp(15px,2vw,17.5px)', color: '#5d6b5f' }}>Pensado para el día a día del mostrador: rápido para cobrar y completo para que no se te escape ningún número.</p>
+      <section id="funciones" className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+        <div className="mb-10 text-center">
+          <span className="text-xs font-extrabold uppercase tracking-widest" style={{ color: ACCENT }}>Todo en un solo lugar</span>
+          <h2 className="mt-2 font-serif text-3xl font-bold leading-tight sm:text-4xl">Lo que podés hacer</h2>
+          <p className="mt-3 text-base sm:text-lg" style={{ color: '#5d6b5f' }}>Pensado para el día a día del mostrador.</p>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 18 }}>
-          {FEATURES.map(({ icon: Icon, title, desc, color, bg }) => (
-            <div key={title} style={{ background: '#fff', border: '1px solid #e7e0d2', borderRadius: 18, padding: 26, transition: '.18s' }}>
-              <div style={{ width: 50, height: 50, borderRadius: 14, background: bg, display: 'grid', placeItems: 'center', marginBottom: 16 }}>
-                <Icon size={25} style={{ stroke: color, fill: 'none' }} />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {FEATURES.map(({ title, desc, color, bg }) => (
+            <div key={title} className="rounded-2xl border p-6" style={{ background: '#fff', borderColor: '#e7e0d2' }}>
+              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl" style={{ background: bg }}>
+                <TrendingUp size={22} style={{ stroke: color, fill: 'none' }} />
               </div>
-              <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 8, letterSpacing: '-.01em' }}>{title}</h3>
-              <p style={{ fontSize: 14.5, color: '#5d6b5f' }}>{desc}</p>
+              <h3 className="mb-2 text-lg font-extrabold">{title}</h3>
+              <p className="text-sm leading-relaxed" style={{ color: '#5d6b5f' }}>{desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* MULTIUSER BAND */}
-      <section id="multiusuario" style={{ padding: '0 clamp(18px,4vw,40px) clamp(48px,7vw,84px)', maxWidth: 1180, margin: '0 auto' }}>
-        <div style={{ background: 'linear-gradient(135deg,#0e1a16,#10261d)', color: '#fff', borderRadius: 26, padding: 'clamp(34px,5vw,58px)', position: 'relative', overflow: 'hidden' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.1fr .9fr', gap: 40, alignItems: 'center' }}>
+      {/* MULTIUSER */}
+      <section id="multiusuario" className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+        <div className="rounded-3xl p-8 sm:p-12" style={{ background: 'linear-gradient(135deg,#0e1a16,#10261d)', color: '#fff' }}>
+          <div className="grid gap-8 md:grid-cols-2 md:items-center">
             <div>
-              <h2 style={{ fontFamily: 'var(--font-fraunces),Georgia,serif', fontWeight: 700, fontSize: 'clamp(26px,3.6vw,40px)', lineHeight: 1.1, marginBottom: 16 }}>Varios usuarios, al mismo tiempo</h2>
-              <p style={{ color: '#bfd3c9', fontSize: 16, maxWidth: 440 }}>Vos en el mostrador, tu empleado en la otra caja y vos mirando los números desde casa. Todos conectados a la vez.</p>
-              <ul style={{ listStyle: 'none', marginTop: 22, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {['Creás un usuario para cada persona del local','Acceso simultáneo desde varias cajas o dispositivos','Cada uno entra con su propio usuario y contraseña','Se ve igual de bien en compu, tablet y celular'].map((item) => (
-                  <li key={item} style={{ display: 'flex', gap: 11, alignItems: 'flex-start', fontSize: 15, color: '#e7efe9' }}>
-                    <span style={{ flexShrink: 0, width: 22, height: 22, borderRadius: 7, background: PRIMARY, display: 'grid', placeItems: 'center' }}>
-                      <Check size={13} style={{ stroke: '#fff' }} />
+              <h2 className="font-serif text-3xl font-bold leading-tight sm:text-4xl">Varios usuarios, al mismo tiempo</h2>
+              <p className="mt-3 text-base" style={{ color: '#bfd3c9' }}>Vos en el mostrador, tu empleado en la otra caja. Todos conectados a la vez.</p>
+              <ul className="mt-5 space-y-3">
+                {['Creás un usuario para cada persona del local','Acceso simultáneo desde varias cajas','Cada uno con su usuario y contraseña','Se ve igual en compu, tablet y celular'].map(t => (
+                  <li key={t} className="flex items-start gap-3 text-sm" style={{ color: '#e7efe9' }}>
+                    <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-lg" style={{ background: PRIMARY }}>
+                      <Check size={11} style={{ stroke: '#fff' }} />
                     </span>
-                    {item}
+                    {t}
                   </li>
                 ))}
               </ul>
             </div>
-            <div style={{ background: 'rgba(255,255,255,.06)', border: '1px solid rgba(255,255,255,.12)', borderRadius: 18, padding: 22 }}>
-              <div style={{ fontSize: 12, color: '#9fb3a8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.05em', marginBottom: 6 }}>Conectados ahora</div>
-              {[['M','#0d9f6e','Mostrador 1','Caja principal'],['C','#f0653e','Caja 2','Empleado'],['D','#7c5cff','Dueño','Desde el celular']].map(([initial, color, name, role]) => (
-                <div key={name} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 0', borderBottom: '1px solid rgba(255,255,255,.08)' }}>
-                  <span style={{ width: 38, height: 38, borderRadius: '50%', background: color, display: 'grid', placeItems: 'center', fontWeight: 800, color: '#fff', fontSize: 15 }}>{initial}</span>
-                  <div style={{ flex: 1 }}>
-                    <b style={{ fontSize: 14.5 }}>{name}</b>
-                    <small style={{ display: 'block', color: '#9fb3a8', fontSize: 12 }}>{role}</small>
+            <div className="rounded-2xl p-5" style={{ background: 'rgba(255,255,255,.07)', border: '1px solid rgba(255,255,255,.12)' }}>
+              <p className="mb-3 text-xs font-bold uppercase tracking-wider" style={{ color: '#9fb3a8' }}>Conectados ahora</p>
+              {[['M','#0d9f6e','Mostrador 1','Caja principal'],['C','#f0653e','Caja 2','Empleado'],['D','#7c5cff','Dueño','Desde el celular']].map(([i,c,n,r]) => (
+                <div key={n} className="flex items-center gap-3 border-b py-3 last:border-0" style={{ borderColor: 'rgba(255,255,255,.08)' }}>
+                  <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" style={{ background: c }}>{i}</span>
+                  <div className="flex-1">
+                    <p className="text-sm font-bold">{n}</p>
+                    <p className="text-xs" style={{ color: '#9fb3a8' }}>{r}</p>
                   </div>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: '#28c840', display: 'flex', alignItems: 'center', gap: 5 }}>
-                    <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#28c840', display: 'block' }} /> En línea
+                  <span className="flex items-center gap-1.5 text-xs font-bold" style={{ color: '#28c840' }}>
+                    <span className="h-1.5 w-1.5 rounded-full" style={{ background: '#28c840' }} /> En línea
                   </span>
                 </div>
               ))}
@@ -208,85 +202,86 @@ export default function LandingPage() {
       </section>
 
       {/* PRICING */}
-      <section id="precio" style={{ padding: '0 clamp(18px,4vw,40px) clamp(48px,7vw,84px)', maxWidth: 1180, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 40px' }}>
-          <span style={{ fontWeight: 800, fontSize: 13, letterSpacing: '.12em', textTransform: 'uppercase', color: ACCENT }}>Elegí tu plan</span>
-          <h2 style={{ fontFamily: 'var(--font-fraunces),Georgia,serif', fontWeight: 700, fontSize: 'clamp(28px,4.2vw,44px)', lineHeight: 1.08, margin: '12px 0 14px' }}>Simple y sin letra chica</h2>
-          <p style={{ fontSize: 'clamp(15px,2vw,17.5px)', color: '#5d6b5f' }}>3 días gratis, no pedimos tarjeta. Cancelás cuando querés.</p>
+      <section id="precio" className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+        <div className="mb-10 text-center">
+          <span className="text-xs font-extrabold uppercase tracking-widest" style={{ color: ACCENT }}>Elegí tu plan</span>
+          <h2 className="mt-2 font-serif text-3xl font-bold sm:text-4xl">Simple y sin letra chica</h2>
+          <p className="mt-3" style={{ color: '#5d6b5f' }}>3 días gratis · no pedimos tarjeta · cancelás cuando querés</p>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, maxWidth: 860, margin: '0 auto' }}>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 max-w-2xl mx-auto">
           {/* BASIC */}
-          <div style={{ background: '#fff', border: '1.5px solid #e7e0d2', borderRadius: 24, overflow: 'hidden' }}>
-            <div style={{ padding: '28px 28px 22px' }}>
-              <span style={{ fontWeight: 800, fontSize: 12, letterSpacing: '.1em', textTransform: 'uppercase', color: '#2f6fed' }}>PLAN BÁSICO</span>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginTop: 10 }}>
-                <span style={{ fontSize: 20, fontWeight: 700, color: '#1a1c1a' }}>$</span>
-                <span style={{ fontFamily: 'var(--font-fraunces),Georgia,serif', fontWeight: 900, fontSize: 48, lineHeight: 1, color: '#1a1c1a' }}>15.000</span>
-                <span style={{ fontSize: 15, color: '#5d6b5f', fontWeight: 600 }}>/mes</span>
-              </div>
-              <p style={{ color: '#5d6b5f', fontSize: 14, marginTop: 6 }}>Para kioscos con 1 dueño</p>
+          <div className="rounded-3xl border p-7" style={{ background: '#fff', borderColor: '#e7e0d2' }}>
+            <p className="text-xs font-extrabold uppercase tracking-widest" style={{ color: '#2f6fed' }}>Plan Básico</p>
+            <div className="mt-3 flex items-baseline gap-1">
+              <span className="text-xl font-bold">$</span>
+              <span className="font-serif text-5xl font-black">15.000</span>
+              <span className="text-sm font-semibold" style={{ color: '#5d6b5f' }}>/mes</span>
             </div>
-            <div style={{ padding: '0 28px 28px' }}>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
-                {['Punto de venta con ticket','Inventario y stock','Clientes y fiados','Proveedores','Solo 1 usuario (el dueño)'].map((f) => (
-                  <li key={f} style={{ display: 'flex', gap: 9, fontSize: 14, alignItems: 'center' }}>
-                    <span style={{ width: 18, height: 18, borderRadius: '50%', background: '#e2f4ec', display: 'grid', placeItems: 'center', flexShrink: 0 }}><Check size={10} style={{ stroke: '#0a7e57' }} /></span>{f}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/register" style={{ display: 'block', width: '100%', background: '#fff', color: '#1a1c1a', border: '1.5px solid #e7e0d2', borderRadius: 11, padding: '13px', fontWeight: 700, fontSize: 15, textAlign: 'center', textDecoration: 'none' }}>
-                Empezar prueba gratis
-              </Link>
-            </div>
+            <p className="mt-1.5 text-sm" style={{ color: '#5d6b5f' }}>Para kioscos con 1 dueño</p>
+            <ul className="mt-5 space-y-2.5">
+              {['Punto de venta con ticket','Inventario y stock','Clientes y fiados','Proveedores','Reportes y gráficos','Solo 1 usuario (el dueño)'].map(f => (
+                <li key={f} className="flex items-center gap-2.5 text-sm">
+                  <span className="flex h-4.5 w-4.5 items-center justify-center rounded-full" style={{ background: '#e2f4ec' }}>
+                    <Check size={10} style={{ stroke: '#0a7e57' }} />
+                  </span>
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <Link href="/register" className="mt-6 block rounded-2xl border py-3.5 text-center text-sm font-bold transition-colors hover:bg-gray-50" style={{ borderColor: '#e7e0d2' }}>
+              Empezar prueba gratis
+            </Link>
           </div>
 
           {/* PRO */}
-          <div style={{ background: '#fff', border: '2px solid #0d9f6e', borderRadius: 24, overflow: 'hidden', position: 'relative', boxShadow: '0 16px 40px rgba(13,159,110,.15)' }}>
-            <div style={{ position: 'absolute', top: -1, left: '50%', transform: 'translateX(-50%)', background: PRIMARY, color: '#fff', fontWeight: 800, fontSize: 11, padding: '5px 16px', borderRadius: '0 0 12px 12px', letterSpacing: '.06em' }}>MÁS POPULAR</div>
-            <div style={{ background: 'linear-gradient(135deg,#0d9f6e,#12c98a)', padding: '28px 28px 22px', color: '#fff' }}>
-              <span style={{ fontWeight: 800, fontSize: 12, letterSpacing: '.1em', textTransform: 'uppercase', opacity: .9 }}>PLAN PROFESIONAL</span>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 4, marginTop: 10 }}>
-                <span style={{ fontSize: 20, fontWeight: 700 }}>$</span>
-                <span style={{ fontFamily: 'var(--font-fraunces),Georgia,serif', fontWeight: 900, fontSize: 48, lineHeight: 1 }}>30.000</span>
-                <span style={{ fontSize: 15, opacity: .9, fontWeight: 600 }}>/mes</span>
+          <div className="relative rounded-3xl p-7 shadow-xl" style={{ background: '#fff', border: '2px solid #0d9f6e', boxShadow: '0 16px 40px rgba(13,159,110,.15)' }}>
+            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-xs font-extrabold text-white" style={{ background: PRIMARY }}>
+              MÁS POPULAR
+            </div>
+            <div className="rounded-2xl p-5 -mx-1 mb-4" style={{ background: 'linear-gradient(135deg,#0d9f6e,#12c98a)' }}>
+              <p className="text-xs font-extrabold uppercase tracking-widest text-white/80">Plan Profesional</p>
+              <div className="mt-2 flex items-baseline gap-1">
+                <span className="text-xl font-bold text-white">$</span>
+                <span className="font-serif text-5xl font-black text-white">30.000</span>
+                <span className="text-sm font-semibold text-white/80">/mes</span>
               </div>
-              <p style={{ opacity: .92, fontSize: 14, marginTop: 6 }}>Para almacenes con empleados</p>
+              <p className="mt-1 text-sm text-white/90">Para almacenes con empleados</p>
             </div>
-            <div style={{ padding: '22px 28px 28px' }}>
-              <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
-                {['Todo del Plan Básico','Hasta 3 usuarios simultáneos','Empleados con acceso restringido','Reportes y gráficos completos','Ganancia visible solo para el dueño'].map((f) => (
-                  <li key={f} style={{ display: 'flex', gap: 9, fontSize: 14, alignItems: 'center' }}>
-                    <span style={{ width: 18, height: 18, borderRadius: '50%', background: '#e2f4ec', display: 'grid', placeItems: 'center', flexShrink: 0 }}><Check size={10} style={{ stroke: '#0a7e57' }} /></span>{f}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/register" style={{ display: 'block', width: '100%', background: PRIMARY, color: '#fff', borderRadius: 11, padding: '13px', fontWeight: 800, fontSize: 15, textAlign: 'center', textDecoration: 'none', boxShadow: '0 8px 20px rgba(13,159,110,.28)' }}>
-                Empezar prueba gratis
-              </Link>
-            </div>
+            <ul className="space-y-2.5">
+              {['Todo del Plan Básico','Hasta 3 usuarios simultáneos','Empleados con acceso restringido','Reportes completos','Ganancia visible solo para el dueño'].map(f => (
+                <li key={f} className="flex items-center gap-2.5 text-sm">
+                  <span className="flex h-4.5 w-4.5 items-center justify-center rounded-full" style={{ background: '#e2f4ec' }}>
+                    <Check size={10} style={{ stroke: '#0a7e57' }} />
+                  </span>
+                  {f}
+                </li>
+              ))}
+            </ul>
+            <Link href="/register" className="mt-6 block rounded-2xl py-3.5 text-center text-sm font-extrabold text-white shadow-lg" style={{ background: PRIMARY, boxShadow: '0 8px 20px rgba(13,159,110,.3)' }}>
+              Empezar prueba gratis
+            </Link>
           </div>
         </div>
-        <p style={{ textAlign: 'center', color: '#5d6b5f', fontSize: 13, marginTop: 16 }}>3 días gratis · no pedimos tarjeta · cancelás cuando querés</p>
       </section>
 
       {/* FAQ */}
-      <section id="faq" style={{ padding: '0 clamp(18px,4vw,40px) clamp(48px,7vw,84px)', maxWidth: 1180, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', maxWidth: 640, margin: '0 auto 40px' }}>
-          <span style={{ fontWeight: 800, fontSize: 13, letterSpacing: '.12em', textTransform: 'uppercase', color: ACCENT }}>Dudas</span>
-          <h2 style={{ fontFamily: 'var(--font-fraunces),Georgia,serif', fontWeight: 700, fontSize: 'clamp(28px,4.2vw,44px)', lineHeight: 1.08, margin: '12px 0 0' }}>Preguntas frecuentes</h2>
+      <section id="faq" className="mx-auto max-w-3xl px-4 pb-16 sm:px-6">
+        <div className="mb-8 text-center">
+          <span className="text-xs font-extrabold uppercase tracking-widest" style={{ color: ACCENT }}>Dudas</span>
+          <h2 className="mt-2 font-serif text-3xl font-bold sm:text-4xl">Preguntas frecuentes</h2>
         </div>
-        <div style={{ maxWidth: 760, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div className="space-y-3">
           {FAQS.map((faq, i) => (
-            <div key={i} style={{ background: '#fff', border: '1px solid #e7e0d2', borderRadius: 14, overflow: 'hidden' }}>
+            <div key={i} className="overflow-hidden rounded-2xl border" style={{ background: '#fff', borderColor: '#e7e0d2' }}>
               <button
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                style={{ width: '100%', textAlign: 'left', background: 'none', border: 'none', padding: '18px 22px', fontSize: 16, fontWeight: 700, cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 14 }}
+                className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-base font-bold"
               >
                 {faq.q}
-                <ChevronDown size={20} style={{ color: PRIMARY, transition: '.2s', transform: openFaq === i ? 'rotate(180deg)' : 'none', flexShrink: 0 }} />
+                <ChevronDown size={18} style={{ color: PRIMARY, transition: '.2s', transform: openFaq === i ? 'rotate(180deg)' : 'none', flexShrink: 0 }} />
               </button>
               {openFaq === i && (
-                <p style={{ padding: '0 22px 20px', color: '#5d6b5f', fontSize: 14.5 }}>{faq.a}</p>
+                <p className="px-5 pb-4 text-sm leading-relaxed" style={{ color: '#5d6b5f' }}>{faq.a}</p>
               )}
             </div>
           ))}
@@ -294,15 +289,17 @@ export default function LandingPage() {
       </section>
 
       {/* CTA */}
-      <section style={{ padding: '0 clamp(18px,4vw,40px) clamp(48px,7vw,84px)', maxWidth: 1180, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', background: '#f4eee1', borderRadius: 26, padding: 'clamp(40px,6vw,70px) clamp(20px,4vw,40px)' }}>
-          <h2 style={{ fontFamily: 'var(--font-fraunces),Georgia,serif', fontWeight: 700, fontSize: 'clamp(28px,4.5vw,46px)', lineHeight: 1.05, marginBottom: 14 }}>Empezá a ordenar tu kiosco hoy</h2>
-          <p style={{ color: '#5d6b5f', fontSize: 17, maxWidth: 480, margin: '0 auto 26px' }}>Probalo 3 días gratis. En cinco minutos ya estás cobrando con el ticket y viendo tu ganancia.</p>
-          <div style={{ display: 'flex', gap: 13, justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link href="/register" style={{ background: PRIMARY, color: '#fff', borderRadius: 14, padding: '15px 28px', fontSize: 16.5, fontWeight: 700, textDecoration: 'none', boxShadow: '0 8px 20px rgba(13,159,110,.28)' }}>
+      <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+        <div className="rounded-3xl px-6 py-12 text-center sm:px-12" style={{ background: '#f4eee1' }}>
+          <h2 className="font-serif text-3xl font-bold leading-tight sm:text-4xl">Empezá a ordenar tu kiosco hoy</h2>
+          <p className="mx-auto mt-3 max-w-md text-base sm:text-lg" style={{ color: '#5d6b5f' }}>
+            Probalo 3 días gratis. En cinco minutos ya estás cobrando.
+          </p>
+          <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
+            <Link href="/register" className="w-full rounded-2xl px-8 py-4 text-center text-base font-bold text-white sm:w-auto" style={{ background: PRIMARY, boxShadow: '0 8px 24px rgba(13,159,110,.28)' }}>
               Crear mi usuario gratis
             </Link>
-            <Link href="/login" style={{ background: '#fff', color: '#1a1c1a', borderRadius: 14, padding: '15px 28px', fontSize: 16.5, fontWeight: 700, border: '1.5px solid #e7e0d2', textDecoration: 'none' }}>
+            <Link href="/login" className="w-full rounded-2xl border px-8 py-4 text-center text-base font-bold sm:w-auto" style={{ borderColor: '#e7e0d2', background: '#fff' }}>
               Iniciar sesión
             </Link>
           </div>
@@ -310,13 +307,13 @@ export default function LandingPage() {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ borderTop: '1px solid #e7e0d2', padding: '36px clamp(18px,4vw,40px)', marginTop: 40 }}>
-        <div style={{ maxWidth: 1180, margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, color: '#5d6b5f', fontSize: 13.5 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontWeight: 800, fontSize: 17 }}>
-            <span style={{ width: 30, height: 30, borderRadius: 8, background: 'linear-gradient(135deg,#0d9f6e,#12c98a)', display: 'grid', placeItems: 'center', color: '#053b2b', fontWeight: 900, fontSize: 16 }}>A</span>
+      <footer className="border-t" style={{ borderColor: '#e7e0d2' }}>
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 sm:px-6" style={{ color: '#5d6b5f', fontSize: 13.5 }}>
+          <div className="flex items-center gap-2.5 text-base font-extrabold">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg font-black" style={{ background: 'linear-gradient(135deg,#0d9f6e,#12c98a)', color: '#053b2b', fontSize: 15 }}>A</span>
             Almacén
           </div>
-          <div>Sistema de gestión para kioscos y almacenes · Hecho en Argentina 🇦🇷</div>
+          <p className="text-xs sm:text-sm">Sistema de gestión para kioscos · Hecho en Argentina 🇦🇷</p>
         </div>
       </footer>
     </div>
