@@ -52,7 +52,7 @@ export default function PosPage() {
   const rubroNames = ['Todos', ...rubros.map((r) => r.name)];
 
   const handleBarcodeScanned = async (code: string) => {
-    setShowScanner(false);
+    // NO cerrar el scanner — el usuario puede seguir escaneando artículos
     try {
       const product = await scanBarcode.mutateAsync(code);
       const err = addItem({
@@ -64,15 +64,14 @@ export default function PosPage() {
         stock: product.stock,
       }, 1);
       if (err) {
-        toast.error(err);
+        toast.error(err, { duration: 3000 });
       } else {
-        toast.success(`✓ ${product.name} agregado al ticket`);
-        setShowMobileCart(true); // Muestra el carrito automáticamente
+        toast.success(`✓ ${product.name}`, { duration: 1500 });
       }
     } catch {
       toast.error(
-        `Código "${code}" no encontrado en tu inventario. Andá a Inventario → lápiz ✏️ del producto → completá el campo "Código de barras".`,
-        { duration: 6000 }
+        `Código "${code}" no encontrado. Cargalo en Inventario → ✏️ → campo "Código de barras".`,
+        { duration: 4000 }
       );
     }
   };
