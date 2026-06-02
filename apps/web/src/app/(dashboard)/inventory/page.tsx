@@ -69,7 +69,7 @@ export default function InventoryPage() {
         await createProduct.mutateAsync(values);
         toast.success('Artículo agregado');
       }
-      reset({ name: '', rubroId: '', costoBase: 0, descCompra: 0, ganancia: 40, stock: 0 });
+      reset({ name: '', rubroId: '', costoBase: 0, descCompra: 0, ganancia: 40, stock: 0, barcode: '' });
       setEditId(null);
     } catch (err: any) {
       toast.error(err.response?.data?.message ?? 'Error');
@@ -85,6 +85,7 @@ export default function InventoryPage() {
       descCompra: Number(p.descCompra),
       ganancia: Number(p.ganancia),
       stock: p.stock,
+      barcode: p.barcode ?? '',
     });
   };
 
@@ -211,7 +212,7 @@ export default function InventoryPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border">
-                    {(isCashier ? ['Artículo', 'Rubro', 'P. venta', 'Stock', ''] : ['Artículo', 'Rubro', 'Costo real', 'P. venta', 'Gan. u.', 'Stock', '']).map((h) => (
+                    {(isCashier ? ['Artículo', 'Rubro', 'P. venta', 'Cód. Barras', 'Stock', ''] : ['Artículo', 'Rubro', 'Costo real', 'P. venta', 'Gan. u.', 'Cód. Barras', 'Stock', '']).map((h) => (
                       <th key={h} className="px-4 py-2.5 text-left text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
                         {h}
                       </th>
@@ -230,6 +231,20 @@ export default function InventoryPage() {
                       {!isCashier && <td className="px-4 py-2.5 font-mono">{money(p.costoReal)}</td>}
                       <td className="px-4 py-2.5 font-mono font-semibold">{money(p.precioVenta)}</td>
                       {!isCashier && <td className="px-4 py-2.5 font-mono text-primary">{money(p.gananciaUnit)}</td>}
+                      <td className="px-4 py-2.5">
+                        {(p as any).barcode ? (
+                          <span className="font-mono text-xs bg-muted px-2 py-0.5 rounded-lg text-muted-foreground">
+                            {(p as any).barcode}
+                          </span>
+                        ) : (
+                          <button
+                            className="text-xs text-muted-foreground hover:text-primary underline"
+                            onClick={() => handleEdit(p)}
+                          >
+                            + agregar
+                          </button>
+                        )}
+                      </td>
                       <td className="px-4 py-2.5">
                         <div className="flex items-center gap-2">
                           <Badge variant={p.stock <= 0 ? 'destructive' : p.stock <= 5 ? 'warning' : 'success'}>
