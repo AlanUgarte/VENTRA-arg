@@ -22,7 +22,8 @@ export function usePlans() {
     queryKey: billingKeys.plans,
     queryFn: async () => {
       const { data } = await api.get('/billing/plans');
-      return data;
+      // Solo mostrar BASIC y PRO
+      return (data as Plan[]).filter((p) => p.id === 'BASIC' || p.id === 'PRO');
     },
     staleTime: Infinity,
   });

@@ -76,9 +76,13 @@ export default function AdminTenantsPage() {
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`¿ELIMINAR el negocio "${name}" y todos sus datos? Esta acción es IRREVERSIBLE.`)) return;
-    await deleteMutation.mutateAsync(id);
-    toast.success('Negocio eliminado');
+    if (!confirm(`¿ELIMINAR COMPLETAMENTE el negocio "${name}"?\n\nEsto elimina TODOS sus datos: usuarios, ventas, clientes, proveedores. IRREVERSIBLE.`)) return;
+    try {
+      await deleteMutation.mutateAsync(id);
+      toast.success(`Negocio "${name}" eliminado completamente`);
+    } catch (err: any) {
+      toast.error(err.response?.data?.message ?? 'Error al eliminar');
+    }
   };
 
   const tenants = data?.data ?? [];

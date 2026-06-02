@@ -11,6 +11,7 @@ export const PLANS = {
       'Inventario y stock',
       'Clientes y fiados',
       'Proveedores con medios de pago',
+      'Reportes y gráficos',
       'Solo 1 usuario (el dueño)',
       'Exportación de respaldos',
     ],

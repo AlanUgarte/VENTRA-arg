@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  ForbiddenException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -219,8 +220,44 @@ export class AdminService {
   async deleteTenant(id: string) {
     const tenant = await this.prisma.tenant.findUnique({ where: { id } });
     if (!tenant) throw new NotFoundException('Tenant no encontrado');
-    await this.prisma.tenant.delete({ where: { id } });
-    return { deleted: true };
+    if (tenant.slug === '__system__') {
+      throw new ForbiddenException('No se puede eliminar el tenant del sistema');
+    }
+
+    // Delete in correct order to avoid FK constraint errors
+    await this.prisma.$transaction(async (tx) => {
+      // 1. Sale lines + credits
+      await tx.saleLine.deleteMany({ where: { sale: { tenantId: id } } });
+      await tx.creditLine.deleteMany({ where: { credit: { tenantId: id } } });
+      await tx.credit.deleteMany({ where: { tenantId: id } });
+      await tx.customerPayment.deleteMany({ where: { tenantId: id } });
+      await tx.sale.deleteMany({ where: { tenantId: id } });
+
+      // 2. Supplier invoices & payments
+      await tx.supplierPayment.deleteMany({ where: { tenantId: id } });
+      await tx.supplierInvoice.deleteMany({ where: { tenantId: id } });
+      await tx.supplier.deleteMany({ where: { tenantId: id } });
+
+      // 3. Customers, products, rubros, payment methods
+      await tx.customer.deleteMany({ where: { tenantId: id } });
+      await tx.product.deleteMany({ where: { tenantId: id } });
+      await tx.rubro.deleteMany({ where: { tenantId: id } });
+      await tx.paymentMethod.deleteMany({ where: { tenantId: id } });
+
+      // 4. Users & tokens
+      const users = await tx.user.findMany({ where: { tenantId: id }, select: { id: true } });
+      await tx.refreshToken.deleteMany({ where: { userId: { in: users.map(u => u.id) } } });
+      await tx.user.deleteMany({ where: { tenantId: id } });
+
+      // 5. Audit logs & subscription
+      await tx.auditLog.deleteMany({ where: { tenantId: id } });
+      await tx.subscription.deleteMany({ where: { tenantId: id } });
+
+      // 6. Tenant
+      await tx.tenant.delete({ where: { id } });
+    });
+
+    return { deleted: true, id };
   }
 
   // ── Plan stats ─────────────────────────────────────────────────────────────
