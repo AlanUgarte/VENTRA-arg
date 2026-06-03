@@ -10,10 +10,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { Role } from '@prisma/client';
 import { MAX_USERS_BY_PLAN } from '../billing/plans.config';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private email: EmailService,
+  ) {}
 
   findAll(tenantId: string) {
     return this.prisma.user.findMany({
@@ -50,7 +54,9 @@ export class UsersService {
     if (exists) throw new ConflictException('Email ya usado en este negocio');
 
     const password = await bcrypt.hash(dto.password, 12);
-    return this.prisma.user.create({
+    const tenant = await this.prisma.tenant.findUnique({ where: { id: tenantId }, select: { name: true } });
+
+    const newUser = await this.prisma.user.create({
       data: {
         tenantId,
         name: dto.name,
@@ -60,6 +66,16 @@ export class UsersService {
       },
       select: { id: true, name: true, email: true, role: true, createdAt: true },
     });
+
+    // Email de bienvenida al empleado con sus credenciales — no bloqueante
+    this.email.sendNewEmployee(
+      newUser.email,
+      newUser.name,
+      tenant?.name ?? 'tu negocio',
+      dto.password, // contraseña en texto plano antes del hash
+    );
+
+    return newUser;
   }
 
   async update(tenantId: string, id: string, dto: UpdateUserDto, requestorRole: Role) {

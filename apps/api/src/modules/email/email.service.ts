@@ -1,0 +1,172 @@
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import * as nodemailer from 'nodemailer';
+
+@Injectable()
+export class EmailService {
+  private readonly logger = new Logger(EmailService.name);
+  private transporter: nodemailer.Transporter | null = null;
+
+  constructor(private config: ConfigService) {
+    const host = config.get('SMTP_HOST');
+    const user = config.get('SMTP_USER');
+    const pass = config.get('SMTP_PASS');
+
+    if (!host || !user || !pass) {
+      this.logger.warn('SMTP no configurado — emails desactivados. Configurá SMTP_HOST, SMTP_USER, SMTP_PASS.');
+      return;
+    }
+
+    this.transporter = nodemailer.createTransport({
+      host,
+      port: config.get<number>('SMTP_PORT', 587),
+      secure: config.get<number>('SMTP_PORT', 587) === 465,
+      auth: { user, pass },
+    });
+  }
+
+  private get from() {
+    return this.config.get('SMTP_FROM', `VENTRA ARG <${this.config.get('SMTP_USER')}>`);
+  }
+
+  private get appUrl() {
+    return this.config.get('APP_URL', 'https://ventra-arg.vercel.app');
+  }
+
+  /** Envía un email de forma no bloqueante — si falla, loguea y sigue */
+  private async send(to: string, subject: string, html: string) {
+    if (!this.transporter) return;
+    try {
+      await this.transporter.sendMail({ from: this.from, to, subject, html });
+      this.logger.log(`Email enviado a ${to}: ${subject}`);
+    } catch (e: any) {
+      this.logger.error(`Error enviando email a ${to}: ${e.message}`);
+    }
+  }
+
+  // ─── Templates ───────────────────────────────────────────────────────────
+
+  async sendWelcome(email: string, ownerName: string, businessName: string) {
+    const subject = `¡Bienvenido a VENTRA ARG, ${ownerName}!`;
+    const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f5f5f0; margin: 0; padding: 20px; color: #1a1c1a; }
+  .container { max-width: 560px; margin: 0 auto; background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,.08); }
+  .header { background: linear-gradient(135deg, #0d9f6e, #10b981); padding: 36px 32px; text-align: center; }
+  .logo { font-size: 28px; font-weight: 900; color: #fff; letter-spacing: -.5px; }
+  .logo span { opacity: .7; font-size: 14px; display: block; margin-top: 4px; font-weight: 400; }
+  .body { padding: 36px 32px; }
+  .greeting { font-size: 22px; font-weight: 800; margin-bottom: 12px; }
+  .text { font-size: 15px; color: #5d6b5f; line-height: 1.6; margin-bottom: 16px; }
+  .badge { display: inline-block; background: #e2f4ec; color: #0a7e57; font-weight: 700; padding: 6px 14px; border-radius: 20px; font-size: 13px; margin-bottom: 24px; }
+  .btn { display: block; background: #0d9f6e; color: #fff !important; text-decoration: none; text-align: center; padding: 16px 24px; border-radius: 14px; font-weight: 800; font-size: 16px; margin: 24px 0; }
+  .features { background: #f8faf8; border-radius: 14px; padding: 20px 24px; margin: 20px 0; }
+  .feature { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; font-size: 14px; }
+  .feature:last-child { margin-bottom: 0; }
+  .check { color: #0d9f6e; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .footer { border-top: 1px solid #e7e0d2; padding: 20px 32px; text-align: center; font-size: 12px; color: #9aa3b0; }
+  .trial { background: #fdf2d8; border: 1px solid #e3c56c; color: #7a5c00; padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">A Almacén <span>Sistema de gestión por VENTRA ARG</span></div>
+  </div>
+  <div class="body">
+    <p class="greeting">¡Hola, ${ownerName}! 👋</p>
+    <p class="text">Tu cuenta para <strong>${businessName}</strong> ya está lista. Podés empezar a usar el sistema ahora mismo.</p>
+    <div class="trial">⏳ Tenés <strong>3 días de prueba gratuita</strong> con todas las funciones habilitadas. Sin tarjeta requerida.</div>
+    <div class="features">
+      <div class="feature"><span class="check">✓</span><span><strong>Punto de venta</strong> — cobrá con ticket y comprobante en segundos</span></div>
+      <div class="feature"><span class="check">✓</span><span><strong>Inventario y stock</strong> — controlá lo que entra y sale</span></div>
+      <div class="feature"><span class="check">✓</span><span><strong>Clientes y fiados</strong> — llevá la cuenta corriente actualizada</span></div>
+      <div class="feature"><span class="check">✓</span><span><strong>Código de barras</strong> — escaneá con el celular en el POS</span></div>
+      <div class="feature"><span class="check">✓</span><span><strong>Reportes</strong> — mirá tu facturación y ganancia en tiempo real</span></div>
+    </div>
+    <a href="${this.appUrl}/pos" class="btn">Entrar al sistema →</a>
+    <p class="text" style="font-size:13px">Si tenés dudas, respondé este email y te ayudamos.</p>
+  </div>
+  <div class="footer">
+    VENTRA ARG · Sistema de gestión para kioscos y almacenes · Hecho en Argentina 🇦🇷<br>
+    Este email fue enviado a ${email}
+  </div>
+</div>
+</body>
+</html>`;
+    await this.send(email, subject, html);
+  }
+
+  async sendNewEmployee(
+    email: string,
+    employeeName: string,
+    businessName: string,
+    password: string,
+  ) {
+    const subject = `Tu acceso a ${businessName} — VENTRA ARG`;
+    const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #f5f5f0; margin: 0; padding: 20px; color: #1a1c1a; }
+  .container { max-width: 560px; margin: 0 auto; background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,.08); }
+  .header { background: linear-gradient(135deg, #0d9f6e, #10b981); padding: 36px 32px; text-align: center; }
+  .logo { font-size: 28px; font-weight: 900; color: #fff; }
+  .body { padding: 36px 32px; }
+  .greeting { font-size: 22px; font-weight: 800; margin-bottom: 12px; }
+  .text { font-size: 15px; color: #5d6b5f; line-height: 1.6; margin-bottom: 16px; }
+  .credentials { background: #f8faf8; border: 1px solid #e7e0d2; border-radius: 14px; padding: 20px 24px; margin: 20px 0; }
+  .cred-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 14px; }
+  .cred-row:last-child { margin-bottom: 0; }
+  .cred-label { color: #5d6b5f; font-weight: 600; }
+  .cred-value { font-family: monospace; font-weight: 700; background: #e2f4ec; color: #0a7e57; padding: 4px 10px; border-radius: 8px; }
+  .btn { display: block; background: #0d9f6e; color: #fff !important; text-decoration: none; text-align: center; padding: 16px 24px; border-radius: 14px; font-weight: 800; font-size: 16px; margin: 24px 0; }
+  .warning { background: #fef3cd; border: 1px solid #ffc107; border-radius: 12px; padding: 12px 16px; font-size: 13px; color: #664d03; margin-bottom: 16px; }
+  .footer { border-top: 1px solid #e7e0d2; padding: 20px 32px; text-align: center; font-size: 12px; color: #9aa3b0; }
+  .permissions { font-size: 13px; color: #5d6b5f; background: #f8faf8; border-radius: 12px; padding: 16px; margin: 16px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="logo">A Almacén</div>
+  </div>
+  <div class="body">
+    <p class="greeting">¡Hola, ${employeeName}! 👋</p>
+    <p class="text">El dueño de <strong>${businessName}</strong> te creó una cuenta en el sistema de gestión VENTRA ARG.</p>
+    <div class="credentials">
+      <p style="font-weight:800;margin-bottom:14px;font-size:14px">Tus credenciales de acceso:</p>
+      <div class="cred-row">
+        <span class="cred-label">Email</span>
+        <span class="cred-value">${email}</span>
+      </div>
+      <div class="cred-row">
+        <span class="cred-label">Contraseña</span>
+        <span class="cred-value">${password}</span>
+      </div>
+      <div class="cred-row">
+        <span class="cred-label">Negocio</span>
+        <span class="cred-value">${businessName}</span>
+      </div>
+    </div>
+    <div class="warning">⚠️ <strong>Importante:</strong> Cambiá tu contraseña después del primer ingreso.</div>
+    <div class="permissions">
+      <strong>Tu acceso incluye:</strong> Punto de venta · Inventario · Clientes y fiados · Proveedores<br>
+      <em>Nota: Los reportes financieros y la configuración son visibles solo para el dueño.</em>
+    </div>
+    <a href="${this.appUrl}/login" class="btn">Ingresar al sistema →</a>
+  </div>
+  <div class="footer">
+    VENTRA ARG · Sistema de gestión · Hecho en Argentina 🇦🇷<br>
+    Este email fue enviado a ${email}
+  </div>
+</div>
+</body>
+</html>`;
+    await this.send(email, subject, html);
+  }
+}
