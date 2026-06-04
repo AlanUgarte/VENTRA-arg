@@ -1,22 +1,22 @@
+# cache-bust: 20260603-v5
 FROM node:20-slim AS base
 WORKDIR /app
 RUN apt-get update -y && apt-get install -y openssl ca-certificates && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies
+# Install ALL dependencies (devDeps included — needed for prisma CLI + nest CLI)
 COPY package*.json ./
 COPY apps/api/package*.json ./apps/api/
 COPY prisma ./prisma/
-RUN npm ci --workspace=apps/api
+RUN npm install
 
-# Generate Prisma client
-RUN npx prisma generate
+# Generate Prisma client with current schema (includes SupplierReturn, barcode etc.)
+RUN node_modules/.bin/prisma generate
 
-# Copy source and build — ARG busts cache so this always rebuilds
-ARG BUILD_DATE=unknown
+# Copy source and build
 COPY apps/api ./apps/api/
 RUN npm run build:api
 
-# Production image
+# ── Production image ───────────────────────────────────────────────────────
 FROM node:20-slim AS production
 WORKDIR /app
 ENV NODE_ENV=production
