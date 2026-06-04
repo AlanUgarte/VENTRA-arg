@@ -1,13 +1,11 @@
 import { Global, Module } from '@nestjs/common';
-import { ScheduleModule } from '@nestjs/schedule';
 import { EmailService } from './email.service';
-import { TrialReminderService } from './trial-reminder.service';
-import { BackupService } from './backup.service';
 
+// TrialReminderService y BackupService desactivados temporalmente
+// hasta resolver compatibilidad con @nestjs/schedule en Railway
 @Global()
 @Module({
-  imports: [ScheduleModule.forRoot()],
-  providers: [EmailService, TrialReminderService, BackupService],
+  providers: [EmailService],
   exports: [EmailService],
 })
 export class EmailModule {}
