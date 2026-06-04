@@ -154,6 +154,48 @@ export class EmailService {
     await this.send(email, subject, html);
   }
 
+  async sendPaymentNotification(
+    adminEmail: string,
+    businessName: string,
+    ownerName: string,
+    ownerEmail: string,
+    planName: string,
+    planPrice: number,
+    adminUrl: string,
+  ) {
+    const subject = `💰 Nuevo pago recibido — ${businessName} quiere activar Plan ${planName}`;
+    const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+<style>
+  body{font-family:'Helvetica Neue',Arial,sans-serif;background:#f5f5f0;margin:0;padding:20px;color:#1a1c1a}
+  .c{max-width:560px;margin:0 auto;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+  .h{background:linear-gradient(135deg,#0d9f6e,#10b981);padding:32px;text-align:center;color:#fff;font-size:24px;font-weight:900}
+  .b{padding:36px 32px}.t{font-size:22px;font-weight:800;margin-bottom:16px}
+  .info{background:#f8faf8;border:1px solid #e7e0d2;border-radius:14px;padding:20px 24px;margin:20px 0}
+  .row{display:flex;justify-content:space-between;margin-bottom:10px;font-size:14px}
+  .row:last-child{margin-bottom:0}.label{color:#5d6b5f;font-weight:600}.val{font-weight:700}
+  .btn{display:block;background:#0d9f6e;color:#fff!important;text-decoration:none;text-align:center;padding:16px 24px;border-radius:14px;font-weight:800;font-size:16px;margin:24px 0}
+  .f{border-top:1px solid #e7e0d2;padding:20px 32px;text-align:center;font-size:12px;color:#9aa3b0}
+  .amount{font-size:28px;font-weight:900;color:#0d9f6e;text-align:center;padding:12px 0}
+</style></head>
+<body><div class="c">
+  <div class="h">💰 Notificación de pago</div>
+  <div class="b">
+    <p class="t">Un cliente realizó una transferencia</p>
+    <p class="amount">$${planPrice.toLocaleString('es-AR')} ARS</p>
+    <div class="info">
+      <div class="row"><span class="label">Negocio</span><span class="val">${businessName}</span></div>
+      <div class="row"><span class="label">Dueño</span><span class="val">${ownerName}</span></div>
+      <div class="row"><span class="label">Email</span><span class="val">${ownerEmail}</span></div>
+      <div class="row"><span class="label">Plan solicitado</span><span class="val">${planName}</span></div>
+    </div>
+    <p style="font-size:14px;color:#5d6b5f">Verificá la transferencia en tu cuenta bancaria y activá el plan desde el panel de administración.</p>
+    <a href="${adminUrl}" class="btn">Ir al panel de admin →</a>
+  </div>
+  <div class="f">VENTRA ARG · Panel de administración</div>
+</div></body></html>`;
+    await this.send(adminEmail, subject, html);
+  }
+
   async sendNewEmployee(
     email: string,
     employeeName: string,

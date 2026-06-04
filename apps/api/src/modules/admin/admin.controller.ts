@@ -12,6 +12,9 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { AdminService } from './admin.service';
+import { EmailService } from '../email/email.service';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { SuperAdminGuard } from '../../common/guards/super-admin.guard';
 import { SkipSubscription } from '../../common/guards/subscription.guard';
@@ -36,7 +39,10 @@ class SetStatusDto {
 @ApiTags('admin')
 @Controller('admin')
 export class AdminController {
-  constructor(private service: AdminService) {}
+  constructor(
+    private service: AdminService,
+    private email: EmailService,
+  ) {}
 
   // ── Bootstrap (sin auth — solo con secreto) ─────────────────────────────
   @Public()
@@ -161,6 +167,21 @@ export class AdminController {
   @Get('activity')
   getRecentActivity() {
     return this.service.getRecentActivity();
+  }
+
+  // Test SMTP — útil para verificar configuración de email en producción
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, SuperAdminGuard)
+  @SkipSubscription()
+  @Post('test-email')
+  @HttpCode(HttpStatus.OK)
+  async testEmail(@CurrentUser() user: JwtPayload) {
+    await this.email.sendPasswordReset(
+      user.email,
+      'Super Admin',
+      'https://ventra-arg.vercel.app/reset-password?token=TEST',
+    );
+    return { sent: true, to: user.email };
   }
 
   @ApiBearerAuth()
