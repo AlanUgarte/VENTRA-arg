@@ -136,6 +136,48 @@ export class AuthService {
     await this.prisma.refreshToken.deleteMany({ where: { userId, tokenHash } });
   }
 
+  async forgotPassword(email: string) {
+    const user = await this.prisma.user.findFirst({
+      where: { email: email.toLowerCase(), isActive: true },
+    });
+    // No revelar si el email existe o no (seguridad)
+    if (!user) return { sent: true };
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { resetToken: token, resetTokenExpiry: expiry },
+    });
+
+    const appUrl = this.config.get('APP_URL', 'https://ventra-arg.vercel.app');
+    const resetLink = `${appUrl}/reset-password?token=${token}`;
+    this.email.sendPasswordReset(user.email, user.name, resetLink);
+
+    return { sent: true };
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        resetToken: token,
+        resetTokenExpiry: { gt: new Date() },
+        isActive: true,
+      },
+    });
+    if (!user) throw new Error('Token inválido o expirado');
+
+    const hashed = await bcrypt.hash(newPassword, 12);
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashed, resetToken: null, resetTokenExpiry: null },
+    });
+    // Invalidar todos los refresh tokens del usuario
+    await this.prisma.refreshToken.deleteMany({ where: { userId: user.id } });
+    return { reset: true };
+  }
+
   async me(userId: string) {
     return this.prisma.user.findUnique({
       where: { id: userId },

@@ -7,7 +7,12 @@ import {
   HttpCode,
   HttpStatus,
   Headers,
+  BadRequestException,
 } from '@nestjs/common';
+import { IsEmail, IsString, MinLength } from 'class-validator';
+
+class ForgotPasswordDto { @IsEmail() email: string; }
+class ResetPasswordDto { @IsString() token: string; @IsString() @MinLength(6) newPassword: string; }
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -68,5 +73,25 @@ export class AuthController {
   @Get('me')
   me(@CurrentUser() user: JwtPayload) {
     return this.auth.me(user.sub);
+  }
+
+  @Public()
+  @SkipSubscription()
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.auth.forgotPassword(dto.email);
+  }
+
+  @Public()
+  @SkipSubscription()
+  @Post('reset-password')
+  @HttpCode(HttpStatus.OK)
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    try {
+      return await this.auth.resetPassword(dto.token, dto.newPassword);
+    } catch {
+      throw new BadRequestException('Token inválido o expirado');
+    }
   }
 }

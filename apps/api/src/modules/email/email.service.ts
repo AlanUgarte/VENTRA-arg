@@ -100,6 +100,60 @@ export class EmailService {
     await this.send(email, subject, html);
   }
 
+  async sendPasswordReset(email: string, userName: string, resetLink: string) {
+    const subject = `Recuperar contraseña — VENTRA ARG`;
+    const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+<style>
+  body{font-family:'Helvetica Neue',Arial,sans-serif;background:#f5f5f0;margin:0;padding:20px;color:#1a1c1a}
+  .c{max-width:560px;margin:0 auto;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+  .h{background:linear-gradient(135deg,#0d9f6e,#10b981);padding:32px;text-align:center;color:#fff;font-size:26px;font-weight:900}
+  .b{padding:36px 32px}.t{font-size:22px;font-weight:800;margin-bottom:12px}
+  .p{font-size:15px;color:#5d6b5f;line-height:1.6;margin-bottom:16px}
+  .btn{display:block;background:#0d9f6e;color:#fff!important;text-decoration:none;text-align:center;padding:16px 24px;border-radius:14px;font-weight:800;font-size:16px;margin:24px 0}
+  .w{background:#fdf2d8;border:1px solid #e3c56c;color:#7a5c00;padding:12px 16px;border-radius:12px;font-size:13px}
+  .f{border-top:1px solid #e7e0d2;padding:20px 32px;text-align:center;font-size:12px;color:#9aa3b0}
+</style></head>
+<body><div class="c">
+  <div class="h">A Almacén</div>
+  <div class="b">
+    <p class="t">¿Olvidaste tu contraseña?</p>
+    <p class="p">Hola <strong>${userName}</strong>, recibimos una solicitud para restablecer tu contraseña.</p>
+    <a href="${resetLink}" class="btn">Restablecer contraseña →</a>
+    <div class="w">⏰ Este link expira en <strong>1 hora</strong>. Si no lo usás, tu contraseña no cambia.</div>
+    <p class="p" style="margin-top:16px;font-size:13px">Si no pediste esto, ignorá este email.</p>
+  </div>
+  <div class="f">VENTRA ARG · Hecho en Argentina 🇦🇷<br>Este email fue enviado a ${email}</div>
+</div></body></html>`;
+    await this.send(email, subject, html);
+  }
+
+  async sendTrialExpiring(email: string, userName: string, businessName: string, daysLeft: number) {
+    const subject = `⏳ Tu prueba de VENTRA ARG vence en ${daysLeft} día${daysLeft !== 1 ? 's' : ''}`;
+    const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+<style>
+  body{font-family:'Helvetica Neue',Arial,sans-serif;background:#f5f5f0;margin:0;padding:20px;color:#1a1c1a}
+  .c{max-width:560px;margin:0 auto;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+  .h{background:linear-gradient(135deg,#f59e0b,#d97706);padding:32px;text-align:center;color:#fff;font-size:26px;font-weight:900}
+  .b{padding:36px 32px}.t{font-size:22px;font-weight:800;margin-bottom:12px}
+  .p{font-size:15px;color:#5d6b5f;line-height:1.6;margin-bottom:16px}
+  .btn{display:block;background:#0d9f6e;color:#fff!important;text-decoration:none;text-align:center;padding:16px 24px;border-radius:14px;font-weight:800;font-size:16px;margin:24px 0}
+  .w{background:#fef3cd;border:1px solid #ffc107;color:#664d03;padding:16px;border-radius:12px;font-size:14px;font-weight:600}
+  .f{border-top:1px solid #e7e0d2;padding:20px 32px;text-align:center;font-size:12px;color:#9aa3b0}
+</style></head>
+<body><div class="c">
+  <div class="h">⏳ Tu prueba vence pronto</div>
+  <div class="b">
+    <p class="t">Hola, ${userName}</p>
+    <div class="w">Tu prueba gratuita de <strong>${businessName}</strong> vence en <strong>${daysLeft} día${daysLeft !== 1 ? 's' : ''}</strong>.</div>
+    <p class="p" style="margin-top:16px">Para seguir usando el sistema sin interrupciones, elegí tu plan ahora.</p>
+    <a href="${this.appUrl}/billing" class="btn">Elegir mi plan →</a>
+    <p class="p" style="font-size:13px">Plan Básico desde <strong>$15.000/mes</strong> · Plan Profesional <strong>$30.000/mes</strong><br>Sin tarjeta requerida para probar.</p>
+  </div>
+  <div class="f">VENTRA ARG · Hecho en Argentina 🇦🇷</div>
+</div></body></html>`;
+    await this.send(email, subject, html);
+  }
+
   async sendNewEmployee(
     email: string,
     employeeName: string,
