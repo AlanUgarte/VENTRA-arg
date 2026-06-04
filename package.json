@@ -17,12 +17,12 @@
     "db:seed": "ts-node prisma/seed.ts"
   },
   "devDependencies": {
-    "prisma": "^5.22.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0"
+    "@prisma/client": "^5.22.0",
+    "prisma": "^5.22.0"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
