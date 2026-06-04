@@ -65,7 +65,7 @@ export function drawReceipt(data: ReceiptData): HTMLCanvasElement {
   ctx.textAlign = 'center';
   ctx.fillStyle = '#0d9f6e';
   ctx.font = '800 30px Hanken Grotesk, sans-serif';
-  ctx.fillText('Almacén', W / 2, y + 10);
+  ctx.fillText('VENTRA ARG', W / 2, y + 10);
   y += 34;
 
   ctx.fillStyle = '#697586';

@@ -43,7 +43,7 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
             A
           </div>
           <div>
-            <p className="text-sm font-extrabold text-white leading-none">Almacén</p>
+            <p className="text-sm font-extrabold text-white leading-none">VENTRA ARG</p>
             <p className="mt-0.5 text-[11px] text-white/50 leading-none truncate max-w-[120px]">
               {user?.tenant?.name ?? 'Gestión'}
             </p>

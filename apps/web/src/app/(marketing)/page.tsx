@@ -36,7 +36,7 @@ export default function LandingPage() {
             {/* Logo */}
             <div className="flex items-center gap-2.5 font-extrabold text-lg">
               <span className="flex h-9 w-9 items-center justify-center rounded-xl text-lg font-black" style={{ background: 'linear-gradient(135deg,#0d9f6e,#12c98a)', color: '#053b2b', boxShadow: '0 6px 14px rgba(13,159,110,.35)' }}>A</span>
-              Almacén
+              VENTRA ARG
             </div>
 
             {/* Desktop links */}
@@ -308,12 +308,19 @@ export default function LandingPage() {
 
       {/* FOOTER */}
       <footer className="border-t" style={{ borderColor: '#e7e0d2' }}>
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-8 sm:px-6" style={{ color: '#5d6b5f', fontSize: 13.5 }}>
-          <div className="flex items-center gap-2.5 text-base font-extrabold">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg font-black" style={{ background: 'linear-gradient(135deg,#0d9f6e,#12c98a)', color: '#053b2b', fontSize: 15 }}>A</span>
-            Almacén
+        <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
+          <div className="flex flex-wrap items-center justify-between gap-4" style={{ color: '#5d6b5f', fontSize: 13.5 }}>
+            <div className="flex items-center gap-2.5 text-base font-extrabold" style={{ color: '#1a1c1a' }}>
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg font-black" style={{ background: 'linear-gradient(135deg,#0d9f6e,#12c98a)', color: '#053b2b', fontSize: 15 }}>A</span>
+              VENTRA ARG
+            </div>
+            <p className="text-xs sm:text-sm">Sistema de gestión para kioscos y almacenes · Hecho en Argentina 🇦🇷</p>
+            <div className="flex gap-4 text-xs">
+              <Link href="/privacy" style={{ color: '#5d6b5f', textDecoration: 'none' }} className="hover:underline">Política de privacidad</Link>
+              <Link href="/terms"   style={{ color: '#5d6b5f', textDecoration: 'none' }} className="hover:underline">Términos de uso</Link>
+              <a href="mailto:ugartemultiproductos@gmail.com" style={{ color: '#5d6b5f', textDecoration: 'none' }} className="hover:underline">Contacto</a>
+            </div>
           </div>
-          <p className="text-xs sm:text-sm">Sistema de gestión para kioscos · Hecho en Argentina 🇦🇷</p>
         </div>
       </footer>
     </div>

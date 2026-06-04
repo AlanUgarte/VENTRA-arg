@@ -23,8 +23,8 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: 'Almacén · Sistema POS para kioscos',
-  description: 'El sistema de gestión para tu kiosco o almacén',
+  title: 'VENTRA ARG · Sistema POS para kioscos y almacenes',
+  description: 'El sistema de gestión para tu kiosco o almacén · Punto de venta, inventario, clientes y más.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
