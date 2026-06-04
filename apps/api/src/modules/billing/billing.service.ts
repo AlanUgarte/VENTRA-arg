@@ -59,20 +59,27 @@ export class BillingService {
     const backUrl = `${this.config.get('APP_URL', 'http://localhost:3000')}/billing?status=success`;
     const externalRef: WebhookExternalRef = { tenantId, planId };
 
-    const result = await preApprovalApi.create({
-      body: {
-        reason: `VENTRA ARG · ${plan.name}`,
-        auto_recurring: {
-          frequency: 1,
-          frequency_type: 'months',
-          transaction_amount: plan.price,
-          currency_id: 'ARS',
-        },
-        back_url: backUrl,
-        status: 'pending',
-        external_reference: JSON.stringify(externalRef),
-      } as any,
-    });
+    let result: any;
+    try {
+      result = await preApprovalApi.create({
+        body: {
+          reason: `VENTRA ARG · ${plan.name}`,
+          auto_recurring: {
+            frequency: 1,
+            frequency_type: 'months',
+            transaction_amount: plan.price,
+            currency_id: 'ARS',
+          },
+          back_url: backUrl,
+          status: 'pending',
+          external_reference: JSON.stringify(externalRef),
+        } as any,
+      });
+    } catch (mpErr: any) {
+      const mpMsg = mpErr?.message || JSON.stringify(mpErr);
+      this.logger.error(`MP PreApproval error: ${mpMsg}`);
+      throw new BadRequestException(`Error de Mercado Pago: ${mpMsg}`);
+    }
 
     // Persist MP subscription ID while still pending
     await this.prisma.subscription.update({
