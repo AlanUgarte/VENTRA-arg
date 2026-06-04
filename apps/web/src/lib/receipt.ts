@@ -8,6 +8,7 @@ interface ReceiptLine {
 }
 
 interface ReceiptData {
+  businessName?: string;  // nombre del negocio del tenant
   orderNumber: number;
   date: Date;
   type: 'CASH' | 'CREDIT';
@@ -65,7 +66,7 @@ export function drawReceipt(data: ReceiptData): HTMLCanvasElement {
   ctx.textAlign = 'center';
   ctx.fillStyle = '#0d9f6e';
   ctx.font = '800 30px Hanken Grotesk, sans-serif';
-  ctx.fillText('VENTRA ARG', W / 2, y + 10);
+  ctx.fillText(data.businessName || 'Mi negocio', W / 2, y + 10);
   y += 34;
 
   ctx.fillStyle = '#697586';
