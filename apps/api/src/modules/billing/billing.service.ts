@@ -62,6 +62,7 @@ export class BillingService {
       result = await preApprovalApi.create({
         body: {
           reason: `VENTRA ARG · ${plan.name}`,
+          payer_email: user.email,
           auto_recurring: {
             frequency: 1,
             frequency_type: 'months',
