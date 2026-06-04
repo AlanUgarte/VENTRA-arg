@@ -61,7 +61,7 @@ export class BillingService {
 
     const result = await preApprovalApi.create({
       body: {
-        reason: `Almacén · ${plan.name} · ${user.email}`,
+        reason: `VENTRA ARG · ${plan.name}`,
         auto_recurring: {
           frequency: 1,
           frequency_type: 'months',
@@ -69,10 +69,9 @@ export class BillingService {
           currency_id: 'ARS',
         },
         back_url: backUrl,
-        payer_email: user.email,
         status: 'pending',
         external_reference: JSON.stringify(externalRef),
-      },
+      } as any,
     });
 
     // Persist MP subscription ID while still pending
