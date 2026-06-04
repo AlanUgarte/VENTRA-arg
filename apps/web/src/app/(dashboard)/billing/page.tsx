@@ -1,13 +1,13 @@
 'use client';
 import { useState } from 'react';
-import { Check, Zap, Crown, AlertTriangle, Copy, Loader2 } from 'lucide-react';
+import { Check, Zap, Crown, AlertTriangle, Copy, Loader2, ExternalLink } from 'lucide-react';
 import { Topbar } from '@/components/layout/topbar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogBody } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/auth.store';
-import { usePlans, useBillingSubscription } from '@/hooks/use-billing';
+import { usePlans, useBillingSubscription, useSubscribe, useCancelSubscription } from '@/hooks/use-billing';
 import { money, fdate } from '@/lib/utils';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
@@ -35,17 +35,40 @@ const STATUS_VARIANT: Record<string, any> = {
 export default function BillingPage() {
   const { user } = useAuthStore();
   const isOwner = user?.role === 'OWNER';
-  const [selectedPlan, setSelectedPlan] = useState<any>(null);
-  const [notifying, setNotifying] = useState(false);
-  const [notified, setNotified] = useState(false);
+
+  const [transferPlan, setTransferPlan] = useState<any>(null);
+  const [notifying, setNotifying]       = useState(false);
+  const [notified, setNotified]         = useState(false);
 
   const { data: plans = [] }   = usePlans();
   const { data: subscription } = useBillingSubscription();
+  const subscribe              = useSubscribe();
+  const cancelSub              = useCancelSubscription();
 
   const sub = subscription ?? user?.tenant?.subscription;
   const trialDaysLeft = sub?.trialEndsAt
     ? Math.max(0, Math.ceil((new Date(sub.trialEndsAt).getTime() - Date.now()) / 86400000))
     : 0;
+
+  const handleSubscribe = async (planId: string) => {
+    try {
+      const { initPoint } = await subscribe.mutateAsync(planId);
+      window.open(initPoint, '_blank');
+    } catch (e: any) {
+      const msg = e?.response?.data?.message ?? 'Error al procesar. Intentá con transferencia bancaria.';
+      toast.error(msg);
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!confirm('¿Cancelar la suscripción? Perderás acceso al finalizar el período actual.')) return;
+    try {
+      await cancelSub.mutateAsync();
+      toast.success('Suscripción cancelada');
+    } catch {
+      toast.error('Error al cancelar');
+    }
+  };
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -53,14 +76,14 @@ export default function BillingPage() {
   };
 
   const handleNotifyPayment = async () => {
-    if (!selectedPlan) return;
+    if (!transferPlan) return;
     setNotifying(true);
     try {
-      await api.post('/billing/notify-payment', { plan: selectedPlan.id });
+      await api.post('/billing/notify-payment', { plan: transferPlan.id });
       setNotified(true);
       toast.success('¡Notificación enviada! Activaremos tu plan en menos de 24 h.');
     } catch {
-      toast.error('Error al enviar la notificación. Avisanos por email.');
+      toast.error('Error al enviar. Escribinos por email.');
     } finally {
       setNotifying(false);
     }
@@ -89,16 +112,19 @@ export default function BillingPage() {
                     </p>
                   )}
                   {sub.status === 'TRIAL' && trialDaysLeft === 0 && (
-                    <p className="mt-1 text-sm text-destructive font-semibold">
-                      Tu período de prueba venció. Elegí un plan para continuar.
-                    </p>
+                    <p className="mt-1 text-sm text-destructive font-semibold">Tu período de prueba venció. Elegí un plan para continuar.</p>
                   )}
                   {sub.status === 'ACTIVE' && sub.currentPeriodEnd && (
                     <p className="mt-1 text-sm text-muted-foreground">
-                      Próximo vencimiento: <span className="font-semibold">{fdate(sub.currentPeriodEnd)}</span>
+                      Próximo cobro: <span className="font-semibold">{fdate(sub.currentPeriodEnd)}</span>
                     </p>
                   )}
                 </div>
+                {sub.status === 'ACTIVE' && isOwner && (
+                  <Button variant="outline" size="sm" onClick={handleCancel} disabled={cancelSub.isPending}>
+                    Cancelar suscripción
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -112,7 +138,7 @@ export default function BillingPage() {
               <p className="font-bold">
                 {trialDaysLeft === 0 ? 'Tu prueba venció' : `Tu prueba vence en ${trialDaysLeft} día${trialDaysLeft !== 1 ? 's' : ''}`}
               </p>
-              <p className="text-sm mt-0.5">Elegí un plan abajo y transferí para activarlo.</p>
+              <p className="text-sm mt-0.5">Elegí un plan para no perder el acceso.</p>
             </div>
           </div>
         )}
@@ -162,13 +188,27 @@ export default function BillingPage() {
                   {isCurrent ? (
                     <Button className="w-full" disabled variant="outline">Plan actual ✓</Button>
                   ) : isOwner ? (
-                    <Button
-                      className="w-full"
-                      variant={plan.id === 'PRO' ? 'default' : 'outline'}
-                      onClick={() => { setSelectedPlan(plan); setNotified(false); }}
-                    >
-                      Contratar — Pagar por transferencia
-                    </Button>
+                    <div className="space-y-2">
+                      {/* Botón principal: MP automático */}
+                      <Button
+                        className="w-full"
+                        variant={plan.id === 'PRO' ? 'default' : 'outline'}
+                        onClick={() => handleSubscribe(plan.id)}
+                        disabled={subscribe.isPending}
+                      >
+                        {subscribe.isPending
+                          ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Procesando...</>
+                          : <><ExternalLink className="mr-2 h-4 w-4" />Suscribirse con Mercado Pago</>
+                        }
+                      </Button>
+                      {/* Fallback: transferencia bancaria */}
+                      <button
+                        onClick={() => { setTransferPlan(plan); setNotified(false); }}
+                        className="w-full text-center text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors py-1"
+                      >
+                        Pagar por transferencia bancaria
+                      </button>
+                    </div>
                   ) : (
                     <p className="text-center text-xs text-muted-foreground">Solo el dueño puede cambiar el plan</p>
                   )}
@@ -178,38 +218,36 @@ export default function BillingPage() {
           </div>
         </div>
 
-        {/* Info pago */}
+        {/* Info MP */}
         <Card>
           <CardContent className="pt-5 space-y-2">
-            <h3 className="font-bold flex items-center gap-2"><span>💳</span> ¿Cómo funciona el pago?</h3>
+            <h3 className="font-bold flex items-center gap-2"><span>💳</span> Cómo funciona el cobro automático</h3>
             <ol className="space-y-1.5 text-sm text-muted-foreground list-decimal list-inside">
-              <li>Elegís tu plan y hacés clic en <strong>"Contratar"</strong></li>
-              <li>Copiás el CBU y realizás la transferencia bancaria</li>
-              <li>Hacés clic en <strong>"Ya transferí, activar mi plan"</strong></li>
-              <li>Verificamos el pago y activamos tu plan en menos de 24 horas hábiles</li>
+              <li>Hacés clic en <strong>"Suscribirse con Mercado Pago"</strong></li>
+              <li>Se abre MP donde autorizás el cobro mensual automático</li>
+              <li>Volvés a la app y tu plan se activa en segundos</li>
+              <li>MP te cobra automáticamente cada mes hasta que canceles</li>
             </ol>
           </CardContent>
         </Card>
 
       </div>
 
-      {/* Modal de transferencia */}
-      <Dialog open={!!selectedPlan} onOpenChange={() => setSelectedPlan(null)}>
+      {/* Modal transferencia bancaria (fallback) */}
+      <Dialog open={!!transferPlan} onOpenChange={() => setTransferPlan(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>
-              Contratar {selectedPlan?.name} — {money(selectedPlan?.price)}/mes
+              Transferencia — {transferPlan?.name} ({money(transferPlan?.price)}/mes)
             </DialogTitle>
           </DialogHeader>
           <DialogBody className="space-y-4">
-
             {!notified ? (
               <>
                 <p className="text-sm text-muted-foreground">
-                  Realizá una transferencia de <strong className="text-foreground font-bold">{money(selectedPlan?.price)}</strong> a:
+                  Transferí <strong className="text-foreground">{money(transferPlan?.price)}</strong> a:
                 </p>
 
-                {/* Datos bancarios */}
                 <div className="rounded-2xl bg-muted/50 border border-border p-4 space-y-3">
                   {[
                     { label: 'Titular', value: BANK.titular },
@@ -225,7 +263,6 @@ export default function BillingPage() {
                       <button
                         onClick={() => copyToClipboard(value, label)}
                         className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                        title={`Copiar ${label}`}
                       >
                         <Copy className="h-4 w-4" />
                       </button>
@@ -233,49 +270,41 @@ export default function BillingPage() {
                   ))}
                 </div>
 
-                {/* Concepto */}
                 <div
                   className="flex items-center justify-between rounded-xl bg-primary/5 border border-primary/20 px-4 py-3 cursor-pointer hover:bg-primary/10 transition-colors"
-                  onClick={() => copyToClipboard(`VENTRA ${selectedPlan?.id} - ${user?.tenant?.name}`, 'Concepto')}
+                  onClick={() => copyToClipboard(`VENTRA ${transferPlan?.id} - ${user?.tenant?.name}`, 'Concepto')}
                 >
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-wide text-primary mb-1">Concepto (copiá esto)</p>
-                    <p className="font-mono text-sm font-semibold">{`VENTRA ${selectedPlan?.id} - ${user?.tenant?.name}`}</p>
+                    <p className="font-mono text-sm font-semibold">{`VENTRA ${transferPlan?.id} - ${user?.tenant?.name}`}</p>
                   </div>
                   <Copy className="h-4 w-4 text-primary flex-shrink-0" />
                 </div>
 
                 <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-xs text-amber-800">
-                  ⏰ Tu plan se activa en menos de <strong>24 horas hábiles</strong> después de confirmar.
+                  ⏰ Activación manual en menos de <strong>24 horas hábiles</strong> después de confirmar.
                 </div>
 
-                <Button
-                  className="w-full"
-                  onClick={handleNotifyPayment}
-                  disabled={notifying}
-                >
+                <Button className="w-full" onClick={handleNotifyPayment} disabled={notifying}>
                   {notifying && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {notifying ? 'Enviando notificación...' : '✅ Ya transferí, activar mi plan'}
+                  {notifying ? 'Enviando...' : '✅ Ya transferí, avisarme al activar'}
                 </Button>
 
-                <Button variant="ghost" className="w-full text-muted-foreground" onClick={() => setSelectedPlan(null)}>
+                <Button variant="ghost" className="w-full text-muted-foreground" onClick={() => setTransferPlan(null)}>
                   Cerrar
                 </Button>
               </>
             ) : (
               <div className="text-center py-6 space-y-4">
                 <div className="text-5xl">🎉</div>
-                <h3 className="text-xl font-bold">¡Notificación enviada!</h3>
+                <h3 className="text-xl font-bold">¡Listo!</h3>
                 <p className="text-sm text-muted-foreground">
-                  Verificaremos tu transferencia y activaremos el Plan <strong>{selectedPlan?.name}</strong> en menos de <strong>24 horas hábiles</strong>.
+                  Verificaremos tu transferencia y activaremos el <strong>{transferPlan?.name}</strong> en menos de <strong>24 horas hábiles</strong>.
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  ¿Dudas? Escribinos a <strong>{BANK.email}</strong>
-                </p>
-                <Button className="w-full" onClick={() => setSelectedPlan(null)}>Listo</Button>
+                <p className="text-xs text-muted-foreground">¿Dudas? <strong>{BANK.email}</strong></p>
+                <Button className="w-full" onClick={() => setTransferPlan(null)}>Cerrar</Button>
               </div>
             )}
-
           </DialogBody>
         </DialogContent>
       </Dialog>
