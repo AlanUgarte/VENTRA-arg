@@ -12,7 +12,7 @@ import * as crypto from 'crypto';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtPayload } from '../../common/interfaces/jwt-payload.interface';
-import { EmailService } from '../email/email.service';
+// import { EmailService } from '../email/email.service'; // temporalmente deshabilitado
 
 const DEFAULT_RUBROS = [
   { name: 'Alimentos', color: '#0d9f6e', order: 0 },
@@ -39,7 +39,7 @@ export class AuthService {
     private prisma: PrismaService,
     private jwt: JwtService,
     private config: ConfigService,
-    private email: EmailService,
+    // private email: EmailService, // temporalmente deshabilitado
   ) {}
 
   async register(dto: RegisterDto) {
@@ -87,8 +87,8 @@ export class AuthService {
       return { tenant, user };
     });
 
-    // Email de bienvenida — no bloqueante
-    this.email.sendWelcome(user.email, user.name, tenant.name);
+    // Email de bienvenida — temporalmente deshabilitado
+    // this.email.sendWelcome(user.email, user.name, tenant.name);
 
     return this.issueTokens(user.id, tenant.id, Role.OWNER, user.email);
   }
@@ -153,7 +153,7 @@ export class AuthService {
 
     const appUrl = this.config.get('APP_URL', 'https://ventra-arg.vercel.app');
     const resetLink = `${appUrl}/reset-password?token=${token}`;
-    this.email.sendPasswordReset(user.email, user.name, resetLink);
+    // this.email.sendPasswordReset(user.email, user.name, resetLink); // temporalmente deshabilitado
 
     return { sent: true };
   }

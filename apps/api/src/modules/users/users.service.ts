@@ -10,13 +10,13 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { Role } from '@prisma/client';
 import { MAX_USERS_BY_PLAN } from '../billing/plans.config';
-import { EmailService } from '../email/email.service';
+// import { EmailService } from '../email/email.service'; // temporalmente deshabilitado
 
 @Injectable()
 export class UsersService {
   constructor(
     private prisma: PrismaService,
-    private email: EmailService,
+    // private email: EmailService, // temporalmente deshabilitado
   ) {}
 
   findAll(tenantId: string) {
@@ -66,14 +66,6 @@ export class UsersService {
       },
       select: { id: true, name: true, email: true, role: true, createdAt: true },
     });
-
-    // Email de bienvenida al empleado con sus credenciales — no bloqueante
-    this.email.sendNewEmployee(
-      newUser.email,
-      newUser.name,
-      tenant?.name ?? 'tu negocio',
-      dto.password, // contraseña en texto plano antes del hash
-    );
 
     return newUser;
   }
