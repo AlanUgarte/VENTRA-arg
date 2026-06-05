@@ -178,12 +178,14 @@ export class AuthService {
     return { reset: true };
   }
 
-  async resetDirect(email: string, newPassword: string) {
+  async resetDirect(email: string, currentPassword: string, newPassword: string) {
     const user = await this.prisma.user.findFirst({
       where: { email: email.toLowerCase(), isActive: true },
     });
-    // No revelar si el email existe (seguridad)
-    if (!user) return { reset: true };
+    if (!user) throw new UnauthorizedException('Email o contraseña incorrectos');
+
+    const ok = await bcrypt.compare(currentPassword, user.password);
+    if (!ok) throw new UnauthorizedException('Email o contraseña incorrectos');
 
     const hashed = await bcrypt.hash(newPassword, 12);
     await this.prisma.user.update({

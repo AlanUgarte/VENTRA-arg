@@ -2,15 +2,44 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
-import { Loader2, CheckCircle, KeyRound } from 'lucide-react';
+import { Loader2, CheckCircle, KeyRound, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import api from '@/lib/api';
 
+function PasswordInput({ id, value, onChange, placeholder, required }: {
+  id: string; value: string; onChange: (v: string) => void;
+  placeholder?: string; required?: boolean;
+}) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="relative">
+      <Input
+        id={id}
+        type={show ? 'text' : 'password'}
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        placeholder={placeholder}
+        required={required}
+        className="pr-10"
+      />
+      <button
+        type="button"
+        onClick={() => setShow(v => !v)}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+        tabIndex={-1}
+      >
+        {show ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+      </button>
+    </div>
+  );
+}
+
 export default function ForgotPasswordPage() {
   const [email,    setEmail]    = useState('');
+  const [current,  setCurrent]  = useState('');
   const [pass,     setPass]     = useState('');
   const [confirm,  setConfirm]  = useState('');
   const [loading,  setLoading]  = useState(false);
@@ -18,15 +47,19 @@ export default function ForgotPasswordPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pass !== confirm) { toast.error('Las contraseñas no coinciden'); return; }
-    if (pass.length < 6)  { toast.error('Mínimo 6 caracteres');          return; }
+    if (pass !== confirm) { toast.error('Las contraseñas nuevas no coinciden'); return; }
+    if (pass.length < 6)  { toast.error('La nueva contraseña debe tener al menos 6 caracteres'); return; }
 
     setLoading(true);
     try {
-      await api.post('/auth/reset-direct', { email, newPassword: pass });
+      await api.post('/auth/reset-direct', {
+        email,
+        currentPassword: current,
+        newPassword: pass,
+      });
       setDone(true);
-    } catch {
-      toast.error('Error al restablecer. Intentá de nuevo.');
+    } catch (e: any) {
+      toast.error(e?.response?.data?.message ?? 'Email o contraseña actual incorrectos');
     } finally {
       setLoading(false);
     }
@@ -38,7 +71,7 @@ export default function ForgotPasswordPage() {
         <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-emerald-400 text-2xl font-black text-emerald-900 shadow-lg shadow-primary/30">
           A
         </div>
-        <CardTitle className="text-2xl font-serif">Restablecer contraseña</CardTitle>
+        <CardTitle className="text-2xl font-serif">Cambiar contraseña</CardTitle>
       </CardHeader>
       <CardContent>
         {done ? (
@@ -55,7 +88,7 @@ export default function ForgotPasswordPage() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Ingresá tu email y elegí una nueva contraseña.
+              Ingresá tu email y contraseña actual para establecer una nueva.
             </p>
 
             <div className="space-y-1.5">
@@ -71,26 +104,34 @@ export default function ForgotPasswordPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="pass">Nueva contraseña</Label>
-              <Input
-                id="pass"
-                type="password"
-                placeholder="Mínimo 6 caracteres"
-                value={pass}
-                onChange={e => setPass(e.target.value)}
+              <Label htmlFor="current">Contraseña actual</Label>
+              <PasswordInput
+                id="current"
+                value={current}
+                onChange={setCurrent}
+                placeholder="Tu contraseña actual"
                 required
-                minLength={6}
               />
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="confirm">Confirmar contraseña</Label>
-              <Input
+              <Label htmlFor="pass">Nueva contraseña</Label>
+              <PasswordInput
+                id="pass"
+                value={pass}
+                onChange={setPass}
+                placeholder="Mínimo 6 caracteres"
+                required
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="confirm">Confirmar nueva contraseña</Label>
+              <PasswordInput
                 id="confirm"
-                type="password"
-                placeholder="Repetí la nueva contraseña"
                 value={confirm}
-                onChange={e => setConfirm(e.target.value)}
+                onChange={setConfirm}
+                placeholder="Repetí la nueva contraseña"
                 required
               />
             </div>
@@ -98,7 +139,7 @@ export default function ForgotPasswordPage() {
             <Button type="submit" className="w-full" size="lg" disabled={loading}>
               {loading
                 ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Actualizando...</>
-                : <><KeyRound className="mr-2 h-4 w-4" />Restablecer contraseña</>
+                : <><KeyRound className="mr-2 h-4 w-4" />Cambiar contraseña</>
               }
             </Button>
 

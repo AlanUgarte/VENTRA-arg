@@ -14,7 +14,7 @@ import { IsEmail, IsString, MinLength } from 'class-validator';
 class ForgotPasswordDto { @IsEmail() email: string; }
 class ResetPasswordDto { @IsString() token: string; @IsString() @MinLength(6) newPassword: string; }
 class ChangePasswordDto { @IsString() currentPassword: string; @IsString() @MinLength(6) newPassword: string; }
-class DirectResetDto { @IsEmail() email: string; @IsString() @MinLength(6) newPassword: string; }
+class DirectResetDto { @IsEmail() email: string; @IsString() currentPassword: string; @IsString() @MinLength(6) newPassword: string; }
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -92,7 +92,7 @@ export class AuthController {
   @Post('reset-direct')
   @HttpCode(HttpStatus.OK)
   async resetDirect(@Body() dto: DirectResetDto) {
-    return this.auth.resetDirect(dto.email, dto.newPassword);
+    return this.auth.resetDirect(dto.email, dto.currentPassword, dto.newPassword);
   }
 
   @Public()
