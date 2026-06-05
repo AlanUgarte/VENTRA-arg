@@ -13,6 +13,7 @@ import { CustomersModule } from './modules/customers/customers.module';
 import { SuppliersModule } from './modules/suppliers/suppliers.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { BillingModule } from './modules/billing/billing.module';
+import { ReturnsModule } from './modules/returns/returns.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { EmailModule } from './modules/email/email.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
@@ -41,6 +42,7 @@ import { validateEnv } from './config/env.validation';
     SuppliersModule,
     ReportsModule,
     BillingModule,
+    ReturnsModule,
     AdminModule,
     EmailModule,
   ],
