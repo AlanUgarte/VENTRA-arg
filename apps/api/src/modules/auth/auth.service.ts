@@ -178,6 +178,22 @@ export class AuthService {
     return { reset: true };
   }
 
+  async resetDirect(email: string, newPassword: string) {
+    const user = await this.prisma.user.findFirst({
+      where: { email: email.toLowerCase(), isActive: true },
+    });
+    // No revelar si el email existe (seguridad)
+    if (!user) return { reset: true };
+
+    const hashed = await bcrypt.hash(newPassword, 12);
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashed, resetToken: null, resetTokenExpiry: null },
+    });
+    await this.prisma.refreshToken.deleteMany({ where: { userId: user.id } });
+    return { reset: true };
+  }
+
   async changePassword(userId: string, currentPassword: string, newPassword: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new UnauthorizedException();
