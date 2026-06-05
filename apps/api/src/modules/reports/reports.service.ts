@@ -204,7 +204,7 @@ export class ReportsService {
 
     for (const p of products) {
       const costoNeto = Number(p.costoBase) * (1 - Number(p.descCompra) / 100);
-      const precioVenta = costoNeto * (1 + Number(p.margenGanancia) / 100);
+      const precioVenta = costoNeto * (1 + Number(p.ganancia) / 100);
       rows.push([
         `"${p.name}"`,
         `"${p.rubro?.name ?? ''}"`,
@@ -212,7 +212,7 @@ export class ReportsService {
         Number(p.costoBase).toFixed(2),
         Number(p.descCompra).toFixed(2),
         costoNeto.toFixed(2),
-        Number(p.margenGanancia).toFixed(2),
+        Number(p.ganancia).toFixed(2),
         precioVenta.toFixed(2),
         String(p.stock),
       ].join(';'));
@@ -229,7 +229,7 @@ export class ReportsService {
     });
 
     const rows: string[] = [
-      ['Nombre', 'Teléfono', 'Email', 'Total pagado', 'Fecha alta'].join(';'),
+      ['Nombre', 'Teléfono', 'Total pagado', 'Fecha alta'].join(';'),
     ];
 
     for (const c of customers) {
@@ -237,7 +237,6 @@ export class ReportsService {
       rows.push([
         `"${c.name}"`,
         c.phone ?? '',
-        c.email ?? '',
         pagado.toFixed(2),
         new Date(c.createdAt).toLocaleDateString('es-AR'),
       ].join(';'));
