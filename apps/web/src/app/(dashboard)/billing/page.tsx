@@ -10,7 +10,7 @@ import { useAuthStore } from '@/store/auth.store';
 import { usePlans, useBillingSubscription, useSubscribe, useCancelSubscription } from '@/hooks/use-billing';
 import { money, fdate } from '@/lib/utils';
 import { toast } from 'sonner';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 
 const PLAN_ICONS: Record<string, React.ElementType> = { BASIC: Zap, PRO: Crown };
 const PLAN_COLORS: Record<string, string> = { BASIC: 'text-blue-600', PRO: 'text-primary' };
