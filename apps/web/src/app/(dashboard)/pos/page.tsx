@@ -112,7 +112,10 @@ export default function PosPage() {
 
       // Generar comprobante con datos del carrito (números puros, sin Decimal de Prisma)
       const canvas = drawReceipt({
-        businessName: user?.tenant?.name,   // nombre real del negocio
+        businessName:    user?.tenant?.name,
+        businessPhone:   user?.tenant?.phone,
+        businessAddress: user?.tenant?.address,
+        businessTaxId:   user?.tenant?.taxId,
         orderNumber: sale.orderNumber,
         date: new Date(sale.createdAt),
         type: sale.type,

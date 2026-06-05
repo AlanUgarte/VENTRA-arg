@@ -1,4 +1,5 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Res, UseGuards } from '@nestjs/common';
+import { Response } from 'express';
 import { ReportsService } from './reports.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
@@ -55,5 +56,40 @@ export class ReportsController {
     @Query('pageSize') pageSize?: number,
   ) {
     return this.service.getSaleHistory(u.tenantId, from, to, page, pageSize);
+  }
+
+  // ── Exports CSV ─────────────────────────────────────────────────────────────
+
+  @Roles('OWNER', 'ADMIN')
+  @Get('export/ventas')
+  async exportVentas(
+    @CurrentUser() u: JwtPayload,
+    @Res() res: Response,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
+  ) {
+    const csv = await this.service.exportVentasCSV(u.tenantId, from, to);
+    const filename = `ventas_${from ?? 'todo'}_${to ?? 'hoy'}.csv`;
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(csv);
+  }
+
+  @Roles('OWNER', 'ADMIN')
+  @Get('export/inventario')
+  async exportInventario(@CurrentUser() u: JwtPayload, @Res() res: Response) {
+    const csv = await this.service.exportInventarioCSV(u.tenantId);
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="inventario.csv"');
+    res.send(csv);
+  }
+
+  @Roles('OWNER', 'ADMIN')
+  @Get('export/clientes')
+  async exportClientes(@CurrentUser() u: JwtPayload, @Res() res: Response) {
+    const csv = await this.service.exportClientesCSV(u.tenantId);
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="clientes.csv"');
+    res.send(csv);
   }
 }

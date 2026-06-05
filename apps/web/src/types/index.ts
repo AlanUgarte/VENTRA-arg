@@ -12,6 +12,9 @@ export interface Tenant {
   id: string;
   name: string;
   slug: string;
+  phone?: string;
+  address?: string;
+  taxId?: string;
   subscription: Subscription;
 }
 

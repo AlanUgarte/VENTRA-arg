@@ -8,7 +8,10 @@ interface ReceiptLine {
 }
 
 interface ReceiptData {
-  businessName?: string;  // nombre del negocio del tenant
+  businessName?: string;
+  businessPhone?: string;
+  businessAddress?: string;
+  businessTaxId?: string;
   orderNumber: number;
   date: Date;
   type: 'CASH' | 'CREDIT';
@@ -44,8 +47,13 @@ export function drawReceipt(data: ReceiptData): HTMLCanvasElement {
   const P = 28;
   const lineH = 40;
 
+  const extraHeader =
+    (data.businessPhone   ? 16 : 0) +
+    (data.businessAddress ? 16 : 0) +
+    (data.businessTaxId   ? 16 : 0);
+
   const h =
-    P + 40 + 22 + 24 +
+    P + 40 + extraHeader + 22 + 24 +
     (data.customerName ? 22 : 0) +
     18 + 26 +
     data.lines.length * lineH +
@@ -62,12 +70,28 @@ export function drawReceipt(data: ReceiptData): HTMLCanvasElement {
 
   let y = P;
 
-  // Header
+  // Nombre del negocio
   ctx.textAlign = 'center';
   ctx.fillStyle = '#0d9f6e';
   ctx.font = '800 30px Hanken Grotesk, sans-serif';
   ctx.fillText(data.businessName || 'Mi negocio', W / 2, y + 10);
   y += 34;
+
+  // Datos de contacto opcionales
+  ctx.fillStyle = '#697586';
+  ctx.font = '400 11px IBM Plex Mono, monospace';
+  if (data.businessPhone) {
+    ctx.fillText(`Tel: ${data.businessPhone}`, W / 2, y);
+    y += 16;
+  }
+  if (data.businessAddress) {
+    ctx.fillText(data.businessAddress, W / 2, y);
+    y += 16;
+  }
+  if (data.businessTaxId) {
+    ctx.fillText(`CUIT: ${data.businessTaxId}`, W / 2, y);
+    y += 16;
+  }
 
   ctx.fillStyle = '#697586';
   ctx.font = '600 11px IBM Plex Mono, monospace';

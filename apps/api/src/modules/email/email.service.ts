@@ -13,15 +13,24 @@ export class EmailService {
     const pass = config.get('SMTP_PASS');
 
     if (!host || !user || !pass) {
-      this.logger.warn('SMTP no configurado — emails desactivados. Configurá SMTP_HOST, SMTP_USER, SMTP_PASS.');
+      this.logger.warn(`SMTP desactivado — faltan vars: host=${!!host} user=${!!user} pass=${!!pass}`);
       return;
     }
 
+    const port = config.get<number>('SMTP_PORT', 587);
     this.transporter = nodemailer.createTransport({
       host,
-      port: config.get<number>('SMTP_PORT', 587),
-      secure: config.get<number>('SMTP_PORT', 587) === 465,
+      port,
+      secure: port === 465,
       auth: { user, pass },
+    });
+
+    // Verificar conexión al arrancar
+    this.transporter.verify().then(() => {
+      this.logger.log(`SMTP OK — conectado a ${host}:${port} como ${user}`);
+    }).catch((err: any) => {
+      this.logger.error(`SMTP FALLO al verificar: ${err.message}`);
+      this.transporter = null;
     });
   }
 

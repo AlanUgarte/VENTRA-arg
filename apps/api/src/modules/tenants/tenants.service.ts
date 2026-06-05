@@ -13,6 +13,9 @@ export class TenantsService {
         id: true,
         name: true,
         slug: true,
+        phone: true,
+        address: true,
+        taxId: true,
         createdAt: true,
         subscription: {
           select: {
@@ -31,7 +34,7 @@ export class TenantsService {
     return this.prisma.tenant.update({
       where: { id: tenantId },
       data: dto,
-      select: { id: true, name: true, slug: true, updatedAt: true },
+      select: { id: true, name: true, slug: true, phone: true, address: true, taxId: true, updatedAt: true },
     });
   }
 

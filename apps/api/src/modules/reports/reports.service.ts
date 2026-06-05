@@ -155,6 +155,97 @@ export class ReportsService {
     return { total, page, pageSize, data: sales };
   }
 
+  // ── Exports CSV ────────────────────────────────────────────────────────────
+
+  async exportVentasCSV(tenantId: string, from?: string, to?: string): Promise<string> {
+    const dateFilter = this.buildDateFilter(from, to);
+    const sales = await this.prisma.sale.findMany({
+      where: { tenantId, ...dateFilter },
+      include: {
+        lines: true,
+        user:     { select: { name: true } },
+        customer: { select: { name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const rows: string[] = [
+      ['Fecha', 'N° Venta', 'Tipo', 'Cliente', 'Cajero', 'Productos', 'Subtotal', 'Descuento %', 'Total'].join(';'),
+    ];
+
+    for (const s of sales) {
+      const productos = s.lines.map(l => `${l.quantity}x ${l.productName}`).join(' | ');
+      rows.push([
+        new Date(s.createdAt).toLocaleString('es-AR'),
+        String(s.orderNumber).padStart(4, '0'),
+        s.type === 'CREDIT' ? 'Fiado' : 'Contado',
+        s.customer?.name ?? '',
+        s.user?.name ?? '',
+        `"${productos}"`,
+        Number(s.subtotal).toFixed(2),
+        Number(s.discountPct).toFixed(2),
+        Number(s.total).toFixed(2),
+      ].join(';'));
+    }
+
+    return '﻿' + rows.join('\r\n');
+  }
+
+  async exportInventarioCSV(tenantId: string): Promise<string> {
+    const products = await this.prisma.product.findMany({
+      where: { tenantId, isActive: true },
+      include: { rubro: true },
+      orderBy: [{ rubro: { name: 'asc' } }, { name: 'asc' }],
+    });
+
+    const rows: string[] = [
+      ['Nombre', 'Rubro', 'Código de barras', 'Costo base', 'Desc. compra %', 'Costo neto', 'Margen %', 'Precio venta', 'Stock'].join(';'),
+    ];
+
+    for (const p of products) {
+      const costoNeto = Number(p.costoBase) * (1 - Number(p.descCompra) / 100);
+      const precioVenta = costoNeto * (1 + Number(p.margenGanancia) / 100);
+      rows.push([
+        `"${p.name}"`,
+        `"${p.rubro?.name ?? ''}"`,
+        p.barcode ?? '',
+        Number(p.costoBase).toFixed(2),
+        Number(p.descCompra).toFixed(2),
+        costoNeto.toFixed(2),
+        Number(p.margenGanancia).toFixed(2),
+        precioVenta.toFixed(2),
+        String(p.stock),
+      ].join(';'));
+    }
+
+    return '﻿' + rows.join('\r\n');
+  }
+
+  async exportClientesCSV(tenantId: string): Promise<string> {
+    const customers = await this.prisma.customer.findMany({
+      where: { tenantId, isActive: true },
+      include: { payments: true },
+      orderBy: { name: 'asc' },
+    });
+
+    const rows: string[] = [
+      ['Nombre', 'Teléfono', 'Email', 'Total pagado', 'Fecha alta'].join(';'),
+    ];
+
+    for (const c of customers) {
+      const pagado = c.payments.reduce((s, p) => s + Number(p.amount), 0);
+      rows.push([
+        `"${c.name}"`,
+        c.phone ?? '',
+        c.email ?? '',
+        pagado.toFixed(2),
+        new Date(c.createdAt).toLocaleDateString('es-AR'),
+      ].join(';'));
+    }
+
+    return '﻿' + rows.join('\r\n');
+  }
+
   private buildDateFilter(from?: string, to?: string) {
     if (!from && !to) return {};
     return {

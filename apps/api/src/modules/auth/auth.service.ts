@@ -206,6 +206,9 @@ export class AuthService {
             id: true,
             name: true,
             slug: true,
+            phone: true,
+            address: true,
+            taxId: true,
             subscription: {
               select: {
                 plan: true,
