@@ -253,7 +253,6 @@ export default function BillingPage() {
                     { label: 'Titular', value: BANK.titular },
                     { label: 'Banco',   value: BANK.banco },
                     { label: 'CBU',     value: BANK.cbu },
-                    { label: 'Alias',   value: BANK.alias },
                   ].map(({ label, value }) => (
                     <div key={label} className="flex items-center justify-between gap-2">
                       <div>
