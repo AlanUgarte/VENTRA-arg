@@ -196,6 +196,37 @@ export class EmailService {
     await this.send(adminEmail, subject, html);
   }
 
+  async sendRenewalReminder(email: string, userName: string, businessName: string, plan: string) {
+    const subject = `⏰ Tu suscripción de VENTRA ARG vence en 3 días`;
+    const planName = plan === 'PRO' ? 'Plan Profesional ($30.000/mes)' : 'Plan Básico ($15.000/mes)';
+    const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+<style>
+  body{font-family:'Helvetica Neue',Arial,sans-serif;background:#f5f5f0;margin:0;padding:20px;color:#1a1c1a}
+  .c{max-width:560px;margin:0 auto;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+  .h{background:linear-gradient(135deg,#2f6fed,#4f8fff);padding:32px;text-align:center;color:#fff;font-size:26px;font-weight:900}
+  .b{padding:36px 32px}.t{font-size:22px;font-weight:800;margin-bottom:12px}
+  .p{font-size:15px;color:#5d6b5f;line-height:1.6;margin-bottom:16px}
+  .btn{display:block;background:#0d9f6e;color:#fff!important;text-decoration:none;text-align:center;padding:16px 24px;border-radius:14px;font-weight:800;font-size:16px;margin:24px 0}
+  .info{background:#f8faf8;border-radius:14px;padding:16px 20px;font-size:14px;margin:16px 0}
+  .f{border-top:1px solid #e7e0d2;padding:20px 32px;text-align:center;font-size:12px;color:#9aa3b0}
+</style></head>
+<body><div class="c">
+  <div class="h">⏰ Tu suscripción vence pronto</div>
+  <div class="b">
+    <p class="t">Hola, ${userName}</p>
+    <p class="p">Tu suscripción de <strong>${businessName}</strong> vence en <strong>3 días</strong>.</p>
+    <div class="info">
+      <strong>Plan actual:</strong> ${planName}<br>
+      <strong>Negocio:</strong> ${businessName}
+    </div>
+    <p class="p">Si usás Mercado Pago, el cobro se realiza automáticamente. Si pagás por transferencia, asegurate de renovar antes del vencimiento.</p>
+    <a href="${this.appUrl}/billing" class="btn">Ver mi suscripción →</a>
+  </div>
+  <div class="f">VENTRA ARG · Hecho en Argentina 🇦🇷</div>
+</div></body></html>`;
+    await this.send(email, subject, html);
+  }
+
   async sendNewEmployee(
     email: string,
     employeeName: string,

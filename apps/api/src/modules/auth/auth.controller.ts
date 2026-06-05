@@ -13,6 +13,7 @@ import { IsEmail, IsString, MinLength } from 'class-validator';
 
 class ForgotPasswordDto { @IsEmail() email: string; }
 class ResetPasswordDto { @IsString() token: string; @IsString() @MinLength(6) newPassword: string; }
+class ChangePasswordDto { @IsString() currentPassword: string; @IsString() @MinLength(6) newPassword: string; }
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -73,6 +74,14 @@ export class AuthController {
   @Get('me')
   me(@CurrentUser() user: JwtPayload) {
     return this.auth.me(user.sub);
+  }
+
+  @ApiBearerAuth()
+  @SkipSubscription()
+  @Post('change-password')
+  @HttpCode(HttpStatus.OK)
+  async changePassword(@CurrentUser() user: JwtPayload, @Body() dto: ChangePasswordDto) {
+    return this.auth.changePassword(user.sub, dto.currentPassword, dto.newPassword);
   }
 
   @Public()

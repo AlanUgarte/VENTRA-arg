@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   ShoppingCart, Package, Users, Truck,
-  BarChart3, Settings, LogOut, CreditCard, X,
+  BarChart3, Settings, LogOut, CreditCard, X, UserCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/auth.store';
@@ -90,6 +90,14 @@ function SidebarContent({ onClose }: { onClose?: () => void }) {
             </div>
           </div>
         )}
+        <Link
+          href="/perfil"
+          onClick={onClose}
+          className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold text-white/50 transition-colors hover:bg-white/5 hover:text-white"
+        >
+          <UserCircle className="h-4 w-4" />
+          Mi perfil
+        </Link>
         <button
           onClick={handleLogout}
           className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-semibold text-white/50 transition-colors hover:bg-red-500/10 hover:text-red-300"

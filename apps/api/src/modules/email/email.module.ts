@@ -1,11 +1,12 @@
 import { Global, Module } from '@nestjs/common';
 import { EmailService } from './email.service';
+import { TrialReminderService } from './trial-reminder.service';
+import { PrismaModule } from '../../prisma/prisma.module';
 
-// TrialReminderService y BackupService desactivados temporalmente
-// hasta resolver compatibilidad con @nestjs/schedule en Railway
 @Global()
 @Module({
-  providers: [EmailService],
+  imports: [PrismaModule],
+  providers: [EmailService, TrialReminderService],
   exports: [EmailService],
 })
 export class EmailModule {}

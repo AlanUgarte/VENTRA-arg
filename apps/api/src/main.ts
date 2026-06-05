@@ -41,15 +41,18 @@ async function bootstrap() {
   );
 
   // ── CORS ──────────────────────────────────────────────────────────────────
-  const allowedOrigins = config
-    .get<string>('CORS_ORIGIN', 'http://localhost:3000')
-    .split(',')
-    .map((o) => o.trim());
+  const rawCorsOrigin = config.get<string>('CORS_ORIGIN', 'http://localhost:3000');
+  // En producción nunca permitir wildcard — fallback al dominio de Vercel
+  const resolvedCors = isProd && rawCorsOrigin.trim() === '*'
+    ? 'https://ventra-arg.vercel.app'
+    : rawCorsOrigin;
 
+  const allowedOrigins = resolvedCors.split(',').map((o) => o.trim());
   const corsWildcard = allowedOrigins.includes('*');
+
   app.enableCors({
     origin: corsWildcard
-      ? true                           // allow any origin
+      ? true
       : (origin, cb) => {
           if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
           cb(new Error(`CORS: origin ${origin} not allowed`));

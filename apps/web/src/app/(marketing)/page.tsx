@@ -16,10 +16,12 @@ const FEATURES = [
 ];
 
 const FAQS = [
-  { q: '¿Necesito instalar algo?',                          a: 'No. Funciona desde el navegador en cualquier compu, tablet o celular.' },
-  { q: '¿Puede usarlo más de una persona a la vez?',        a: 'Sí, con el Plan PRO tenés hasta 3 usuarios. Cada uno con su contraseña.' },
-  { q: 'Si cambio un precio, ¿se actualiza lo que me deben?', a: 'Exacto. Los fiados se calculan al precio del día.' },
-  { q: '¿Cómo es la prueba gratis?',                        a: '3 días con todo habilitado, sin tarjeta. Si te sirve, elegís tu plan.' },
+  { q: '¿Necesito instalar algo?',                          a: 'No. Funciona desde el navegador en cualquier compu, tablet o celular. También en iPhone y Android.' },
+  { q: '¿Puede usarlo más de una persona a la vez?',        a: 'Sí, con el Plan PRO tenés hasta 3 usuarios simultáneos. Cada uno con su usuario y contraseña, con permisos separados.' },
+  { q: 'Si cambio un precio, ¿se actualiza lo que me deben?', a: 'Exacto. Los fiados se calculan siempre al precio del día.' },
+  { q: '¿Cómo es la prueba gratis?',                        a: '3 días con todo habilitado. Sin tarjeta de crédito. Si te sirve, elegís tu plan y pagás.' },
+  { q: '¿Cómo se paga?',                                    a: 'Podés pagar con Mercado Pago (cobro automático mensual) o por transferencia bancaria. Con MP se activa al instante.' },
+  { q: '¿Puedo escanear códigos de barras?',                a: 'Sí. Desde el celular usás la cámara para escanear en el punto de venta. En la compu podés conectar un lector de códigos USB.' },
 ];
 
 export default function LandingPage() {

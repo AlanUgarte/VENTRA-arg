@@ -178,6 +178,19 @@ export class AuthService {
     return { reset: true };
   }
 
+  async changePassword(userId: string, currentPassword: string, newPassword: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new UnauthorizedException();
+
+    const ok = await bcrypt.compare(currentPassword, user.password);
+    if (!ok) throw new UnauthorizedException('Contraseña actual incorrecta');
+
+    const hashed = await bcrypt.hash(newPassword, 12);
+    await this.prisma.user.update({ where: { id: userId }, data: { password: hashed } });
+    await this.prisma.refreshToken.deleteMany({ where: { userId } });
+    return { changed: true };
+  }
+
   async me(userId: string) {
     return this.prisma.user.findUnique({
       where: { id: userId },
