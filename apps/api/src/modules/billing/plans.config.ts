@@ -3,7 +3,7 @@ export const PLANS = {
     id: 'BASIC' as const,
     name: 'Plan Básico',
     description: 'Para kioscos pequeños',
-    price: 15_000,
+    price: 100,
     currency: 'ARS',
     maxUsers: 1,
     features: [
@@ -20,7 +20,7 @@ export const PLANS = {
     id: 'PRO' as const,
     name: 'Plan Profesional',
     description: 'Para almacenes con empleados',
-    price: 30_000,
+    price: 100,
     currency: 'ARS',
     maxUsers: 3,
     features: [
