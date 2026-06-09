@@ -40,7 +40,9 @@ describe('AuthService', () => {
     };
 
     const emailMock = {
-      sendWelcomeEmail: jest.fn().mockResolvedValue(undefined),
+      sendWelcome:        jest.fn().mockResolvedValue(undefined),
+      sendTrialExpiring:  jest.fn().mockResolvedValue(undefined),
+      sendRenewalReminder: jest.fn().mockResolvedValue(undefined),
     };
 
     const module: TestingModule = await Test.createTestingModule({
