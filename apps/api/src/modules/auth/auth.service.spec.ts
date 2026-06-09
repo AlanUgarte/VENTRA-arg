@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
 import { createPrismaMock } from '../../test/prisma.mock';
 import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
@@ -38,12 +39,17 @@ describe('AuthService', () => {
       }),
     };
 
+    const emailMock = {
+      sendWelcomeEmail: jest.fn().mockResolvedValue(undefined),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
-        { provide: PrismaService, useValue: prisma },
-        { provide: JwtService, useValue: jwtMock },
-        { provide: ConfigService, useValue: configMock },
+        { provide: PrismaService,  useValue: prisma },
+        { provide: JwtService,     useValue: jwtMock },
+        { provide: ConfigService,  useValue: configMock },
+        { provide: EmailService,   useValue: emailMock },
       ],
     }).compile();
 
