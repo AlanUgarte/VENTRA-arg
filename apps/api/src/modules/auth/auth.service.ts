@@ -52,7 +52,7 @@ export class AuthService {
     const baseSlug = this.toSlug(dto.businessName);
     const slugExists = await this.prisma.tenant.findUnique({ where: { slug: baseSlug } });
     const slug = slugExists ? `${baseSlug}-${Date.now()}` : baseSlug;
-    const trialEndsAt = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+    const trialEndsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
     const { tenant, user } = await this.prisma.$transaction(async (tx) => {
       const tenant = await tx.tenant.create({ data: { name: dto.businessName, slug } });

@@ -56,7 +56,7 @@ export default function RegisterPage() {
         <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-emerald-400 text-2xl font-black text-emerald-900 shadow-lg shadow-primary/30">
           A
         </div>
-        <CardTitle className="text-2xl font-serif">Probá gratis 3 días</CardTitle>
+        <CardTitle className="text-2xl font-serif">Probá gratis 7 días</CardTitle>
         <p className="text-sm text-muted-foreground">Sin tarjeta. Cancelás cuando quieras.</p>
       </CardHeader>
       <CardContent>

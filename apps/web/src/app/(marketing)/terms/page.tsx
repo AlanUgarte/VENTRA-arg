@@ -23,7 +23,7 @@ export default function TermsPage() {
         {[
           { title: '1. Aceptación de los términos', body: 'Al crear una cuenta en VENTRA ARG, aceptás estos Términos de Uso. Si no estás de acuerdo, no uses el servicio.' },
           { title: '2. Descripción del servicio', body: 'VENTRA ARG es un sistema de gestión para kioscos y almacenes que incluye punto de venta, inventario, clientes, proveedores y reportes. El servicio se ofrece bajo un modelo de suscripción mensual.' },
-          { title: '3. Período de prueba', body: 'Ofrecemos 3 días de prueba gratuita sin necesidad de tarjeta de crédito. Al finalizar el período de prueba, el acceso se suspende hasta que elijas un plan.' },
+          { title: '3. Período de prueba', body: 'Ofrecemos 7 días de prueba gratuita sin necesidad de tarjeta de crédito. Al finalizar el período de prueba, el acceso se suspende hasta que elijas un plan.' },
           { title: '4. Suscripción y pagos', body: 'Los planes disponibles son Plan Básico ($15.000/mes) y Plan Profesional ($30.000/mes). Los pagos se procesan mensualmente a través de Mercado Pago. Podés cancelar en cualquier momento; el acceso se mantiene hasta el fin del período pagado.' },
           { title: '5. Uso aceptable', body: 'No podés usar VENTRA ARG para actividades ilegales, fraudulentas o que violen derechos de terceros. El sistema está diseñado para uso comercial legítimo en Argentina.' },
           { title: '6. Propiedad de los datos', body: 'Los datos que ingresás (productos, clientes, ventas) son de tu propiedad. VENTRA ARG no tiene derechos sobre tu información comercial.' },

@@ -88,7 +88,7 @@ export class EmailService {
   <div class="body">
     <p class="greeting">¡Hola, ${ownerName}! 👋</p>
     <p class="text">Tu cuenta para <strong>${businessName}</strong> ya está lista. Podés empezar a usar el sistema ahora mismo.</p>
-    <div class="trial">⏳ Tenés <strong>3 días de prueba gratuita</strong> con todas las funciones habilitadas. Sin tarjeta requerida.</div>
+    <div class="trial">⏳ Tenés <strong>7 días de prueba gratuita</strong> con todas las funciones habilitadas. Sin tarjeta requerida.</div>
     <div class="features">
       <div class="feature"><span class="check">✓</span><span><strong>Punto de venta</strong> — cobrá con ticket y comprobante en segundos</span></div>
       <div class="feature"><span class="check">✓</span><span><strong>Inventario y stock</strong> — controlá lo que entra y sale</span></div>

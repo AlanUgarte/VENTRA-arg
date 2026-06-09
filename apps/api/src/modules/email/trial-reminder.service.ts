@@ -17,11 +17,38 @@ export class TrialReminderService {
   async sendTrialReminders() {
     try {
       const now = new Date();
+
+      // Pruebas que vencen en 3 días (recordatorio a mitad del trial de 7 días)
+      const in3days = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+      const in3daysEnd = new Date(in3days);
+      in3daysEnd.setHours(23, 59, 59, 999);
+
+      const expiringIn3 = await this.prisma.subscription.findMany({
+        where: {
+          status: 'TRIAL',
+          trialEndsAt: { gte: in3days, lte: in3daysEnd },
+        },
+        include: {
+          tenant: {
+            include: {
+              users: { where: { role: 'OWNER', isActive: true }, take: 1 },
+            },
+          },
+        },
+      });
+
+      for (const sub of expiringIn3) {
+        const owner = sub.tenant.users[0];
+        if (!owner) continue;
+        await this.email.sendTrialExpiring(owner.email, owner.name, sub.tenant.name, 3).catch(() => {});
+        this.logger.log(`Trial reminder (3d) sent to ${owner.email}`);
+      }
+
+      // Pruebas que vencen en 2 días
       const in2days = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
       const in2daysEnd = new Date(in2days);
       in2daysEnd.setHours(23, 59, 59, 999);
 
-      // Pruebas que vencen en 2 días
       const expiringIn2 = await this.prisma.subscription.findMany({
         where: {
           status: 'TRIAL',
@@ -71,14 +98,14 @@ export class TrialReminderService {
       }
 
       // Suscripciones activas que vencen en 3 días
-      const in3days = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
-      const in3daysEnd = new Date(in3days);
-      in3daysEnd.setHours(23, 59, 59, 999);
+      const in3daysRenewal = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+      const in3daysRenewalEnd = new Date(in3daysRenewal);
+      in3daysRenewalEnd.setHours(23, 59, 59, 999);
 
       const renewals = await this.prisma.subscription.findMany({
         where: {
           status: 'ACTIVE',
-          currentPeriodEnd: { gte: in3days, lte: in3daysEnd },
+          currentPeriodEnd: { gte: in3daysRenewal, lte: in3daysRenewalEnd },
         },
         include: {
           tenant: {

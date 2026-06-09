@@ -19,7 +19,7 @@ const FAQS = [
   { q: '¿Necesito instalar algo?',                          a: 'No. Funciona desde el navegador en cualquier compu, tablet o celular. También en iPhone y Android.' },
   { q: '¿Puede usarlo más de una persona a la vez?',        a: 'Sí, con el Plan PRO tenés hasta 3 usuarios simultáneos. Cada uno con su usuario y contraseña, con permisos separados.' },
   { q: 'Si cambio un precio, ¿se actualiza lo que me deben?', a: 'Exacto. Los fiados se calculan siempre al precio del día.' },
-  { q: '¿Cómo es la prueba gratis?',                        a: '3 días con todo habilitado. Sin tarjeta de crédito. Si te sirve, elegís tu plan y pagás.' },
+  { q: '¿Cómo es la prueba gratis?',                        a: '7 días con todo habilitado. Sin tarjeta de crédito. Si te sirve, elegís tu plan y pagás.' },
   { q: '¿Cómo se paga?',                                    a: 'Podés pagar con Mercado Pago (cobro automático mensual) o por transferencia bancaria. Con MP se activa al instante.' },
   { q: '¿Puedo escanear códigos de barras?',                a: 'Sí. Desde el celular usás la cámara para escanear en el punto de venta. En la compu podés conectar un lector de códigos USB.' },
 ];
@@ -74,7 +74,7 @@ export default function LandingPage() {
               })}
               <div className="mt-2 flex flex-col gap-2">
                 <Link href="/login" className="rounded-xl border px-4 py-3 text-center text-sm font-bold" style={{ borderColor: '#e7e0d2' }} onClick={() => setMobileNav(false)}>Iniciar sesión</Link>
-                <Link href="/register" className="rounded-xl px-4 py-3 text-center text-sm font-bold text-white" style={{ background: PRIMARY }} onClick={() => setMobileNav(false)}>Probar gratis 3 días</Link>
+                <Link href="/register" className="rounded-xl px-4 py-3 text-center text-sm font-bold text-white" style={{ background: PRIMARY }} onClick={() => setMobileNav(false)}>Probar gratis 7 días</Link>
               </div>
             </div>
           )}
@@ -97,14 +97,14 @@ export default function LandingPage() {
             </p>
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
               <Link href="/register" className="rounded-2xl px-6 py-4 text-center text-base font-bold text-white shadow-lg" style={{ background: PRIMARY, boxShadow: '0 8px 24px rgba(13,159,110,.3)' }}>
-                Probar gratis 3 días
+                Probar gratis 7 días
               </Link>
               <Link href="/login" className="rounded-2xl border px-6 py-4 text-center text-base font-bold" style={{ borderColor: '#e7e0d2', background: '#fff' }}>
                 Iniciar sesión →
               </Link>
             </div>
             <div className="mt-5 flex flex-wrap gap-4 text-sm font-semibold" style={{ color: '#5d6b5f' }}>
-              {['Sin instalar nada', 'Funciona en el celular', '3 días gratis'].map(t => (
+              {['Sin instalar nada', 'Funciona en el celular', '7 días gratis'].map(t => (
                 <span key={t} className="flex items-center gap-1.5">
                   <Check size={15} style={{ stroke: PRIMARY }} /> {t}
                 </span>
@@ -208,7 +208,7 @@ export default function LandingPage() {
         <div className="mb-10 text-center">
           <span className="text-xs font-extrabold uppercase tracking-widest" style={{ color: ACCENT }}>Elegí tu plan</span>
           <h2 className="mt-2 font-serif text-3xl font-bold sm:text-4xl">Simple y sin letra chica</h2>
-          <p className="mt-3" style={{ color: '#5d6b5f' }}>3 días gratis · no pedimos tarjeta · cancelás cuando querés</p>
+          <p className="mt-3" style={{ color: '#5d6b5f' }}>7 días gratis · no pedimos tarjeta · cancelás cuando querés</p>
         </div>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 max-w-2xl mx-auto">
           {/* BASIC */}
@@ -295,7 +295,7 @@ export default function LandingPage() {
         <div className="rounded-3xl px-6 py-12 text-center sm:px-12" style={{ background: '#f4eee1' }}>
           <h2 className="font-serif text-3xl font-bold leading-tight sm:text-4xl">Empezá a ordenar tu kiosco hoy</h2>
           <p className="mx-auto mt-3 max-w-md text-base sm:text-lg" style={{ color: '#5d6b5f' }}>
-            Probalo 3 días gratis. En cinco minutos ya estás cobrando.
+            Probalo 7 días gratis. En cinco minutos ya estás cobrando.
           </p>
           <div className="mt-7 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <Link href="/register" className="w-full rounded-2xl px-8 py-4 text-center text-base font-bold text-white sm:w-auto" style={{ background: PRIMARY, boxShadow: '0 8px 24px rgba(13,159,110,.28)' }}>
