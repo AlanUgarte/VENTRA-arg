@@ -1,15 +1,14 @@
 import type { NextConfig } from 'next';
-import webpack from 'webpack';
 
 const nextConfig: NextConfig = {
   output: 'standalone',
   poweredByHeader: false,
   compress: true,
-  webpack(config, { isServer }) {
+  webpack(config, { isServer, webpack }) {
     if (isServer) {
       // Some dependencies access `location` (a browser global) at module init
-      // time. Node.js < 22 doesn't define globalThis.location, causing
-      // ReferenceError during static page generation.
+      // time. Node.js doesn't define globalThis.location, causing ReferenceError
+      // during Next.js static page generation.
       config.plugins.push(
         new webpack.BannerPlugin({
           banner:
