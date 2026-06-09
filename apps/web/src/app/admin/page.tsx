@@ -1,4 +1,5 @@
 'use client';
+export const dynamic = 'force-dynamic';
 import { useAdminStats, useAdminRevenue, useAdminActivity } from '@/hooks/use-admin';
 import { money, fdate } from '@/lib/utils';
 import {
