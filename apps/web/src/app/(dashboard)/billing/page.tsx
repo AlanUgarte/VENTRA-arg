@@ -12,9 +12,9 @@ import { money, fdate } from '@/lib/utils';
 import { toast } from 'sonner';
 import api from '@/lib/api';
 
-const PLAN_ICONS: Record<string, React.ElementType> = { BASIC: Zap, PRO: Crown };
-const PLAN_COLORS: Record<string, string> = { BASIC: 'text-blue-600', PRO: 'text-primary' };
-const PLAN_BG: Record<string, string>     = { BASIC: 'bg-blue-50',    PRO: 'bg-primary/5' };
+const PLAN_ICONS: Record<string, React.ElementType> = { PRO: Crown };
+const PLAN_COLORS: Record<string, string> = { PRO: 'text-primary' };
+const PLAN_BG: Record<string, string>     = { PRO: 'bg-primary/5' };
 
 const BANK = {
   titular: 'Alan Ugarte',
@@ -143,32 +143,25 @@ export default function BillingPage() {
           </div>
         )}
 
-        {/* Planes */}
-        <div>
-          <h3 className="mb-4 font-bold text-lg">Elegí tu plan</h3>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {plans.map((plan: any) => {
-              const Icon = PLAN_ICONS[plan.id] ?? Zap;
-              const isCurrent = subscription?.plan === plan.id && subscription?.status === 'ACTIVE';
-
-              return (
-                <div
-                  key={plan.id}
-                  className={`relative flex flex-col rounded-2xl border-2 p-5 transition-shadow hover:shadow-md ${
-                    plan.id === 'PRO' ? 'border-primary shadow-md shadow-primary/10' : 'border-border'
-                  }`}
-                >
-                  {plan.id === 'PRO' && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="rounded-full bg-primary px-3 py-0.5 text-xs font-bold text-white shadow">Más popular</span>
-                    </div>
-                  )}
-
-                  <div className={`mb-4 flex h-10 w-10 items-center justify-center rounded-xl ${PLAN_BG[plan.id]}`}>
-                    <Icon className={`h-5 w-5 ${PLAN_COLORS[plan.id]}`} />
+        {/* Plan */}
+        {plans.length > 0 && (() => {
+          const plan = plans[0] as any;
+          const Icon = PLAN_ICONS[plan.id] ?? Crown;
+          const isCurrent = subscription?.plan === plan.id && subscription?.status === 'ACTIVE';
+          return (
+            <div>
+              <h3 className="mb-4 font-bold text-lg">Plan disponible</h3>
+              <div className="max-w-sm mx-auto">
+                <div className="relative flex flex-col rounded-2xl border-2 border-primary p-6 shadow-md shadow-primary/10">
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span className="rounded-full bg-primary px-3 py-0.5 text-xs font-bold text-white shadow">Todo incluido</span>
                   </div>
 
-                  <h4 className="font-bold text-lg">{plan.name}</h4>
+                  <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/5">
+                    <Icon className="h-5 w-5 text-primary" />
+                  </div>
+
+                  <h4 className="font-bold text-xl">{plan.name}</h4>
                   <p className="mt-0.5 text-sm text-muted-foreground">{plan.description}</p>
 
                   <div className="my-4">
@@ -176,7 +169,7 @@ export default function BillingPage() {
                     <span className="text-sm text-muted-foreground"> / mes</span>
                   </div>
 
-                  <ul className="flex-1 space-y-2 mb-5">
+                  <ul className="flex-1 space-y-2 mb-6">
                     {plan.features?.map((feat: string) => (
                       <li key={feat} className="flex items-start gap-2 text-sm">
                         <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
@@ -189,10 +182,8 @@ export default function BillingPage() {
                     <Button className="w-full" disabled variant="outline">Plan actual ✓</Button>
                   ) : isOwner ? (
                     <div className="space-y-2">
-                      {/* Botón principal: MP automático */}
                       <Button
                         className="w-full"
-                        variant={plan.id === 'PRO' ? 'default' : 'outline'}
                         onClick={() => handleSubscribe(plan.id)}
                         disabled={subscribe.isPending}
                       >
@@ -201,7 +192,6 @@ export default function BillingPage() {
                           : <><ExternalLink className="mr-2 h-4 w-4" />Suscribirse con Mercado Pago</>
                         }
                       </Button>
-                      {/* Fallback: transferencia bancaria */}
                       <button
                         onClick={() => { setTransferPlan(plan); setNotified(false); }}
                         className="w-full text-center text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground transition-colors py-1"
@@ -213,10 +203,10 @@ export default function BillingPage() {
                     <p className="text-center text-xs text-muted-foreground">Solo el dueño puede cambiar el plan</p>
                   )}
                 </div>
-              );
-            })}
-          </div>
-        </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Info MP */}
         <Card>

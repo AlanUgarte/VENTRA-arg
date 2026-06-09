@@ -11,10 +11,9 @@ import {
 } from 'recharts';
 
 const PLAN_COLORS: Record<string, string> = {
-  BASIC: '#3b82f6',
-  PRO: '#10b981',
+  PRO:        '#10b981',
   ENTERPRISE: '#8b5cf6',
-  TRIAL: '#6b7280',
+  TRIAL:      '#6b7280',
 };
 
 function StatCard({

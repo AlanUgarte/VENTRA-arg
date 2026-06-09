@@ -4,15 +4,15 @@ import { money } from '@/lib/utils';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 const PLAN_COLORS: Record<string, string> = {
-  BASIC: '#3b82f6',
-  PRO: '#10b981',
+  PRO:        '#10b981',
   ENTERPRISE: '#8b5cf6',
+  TRIAL:      '#eab308',
 };
 
 const PLAN_NAMES: Record<string, string> = {
-  BASIC: 'Plan Básico',
-  PRO: 'Plan Profesional',
+  PRO:        'Plan Completo',
   ENTERPRISE: 'Plan Enterprise',
+  TRIAL:      'Período de prueba',
 };
 
 export default function AdminPlansPage() {

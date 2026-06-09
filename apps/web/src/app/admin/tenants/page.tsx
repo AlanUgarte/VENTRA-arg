@@ -17,8 +17,9 @@ const STATUS_STYLE: Record<string, string> = {
   CANCELLED: 'text-red-400 bg-red-500/10',
 };
 const PLAN_STYLE: Record<string, string> = {
-  BASIC: 'text-blue-400 bg-blue-500/10', PRO: 'text-emerald-400 bg-emerald-500/10',
-  ENTERPRISE: 'text-violet-400 bg-violet-500/10', TRIAL: 'text-gray-400 bg-gray-500/10',
+  PRO:        'text-emerald-400 bg-emerald-500/10',
+  ENTERPRISE: 'text-violet-400 bg-violet-500/10',
+  TRIAL:      'text-gray-400 bg-gray-500/10',
 };
 
 function TenantUsersRow({ tenantId }: { tenantId: string }) {
@@ -201,7 +202,7 @@ export default function AdminTenantsPage() {
               <Select value={newPlan} onValueChange={setNewPlan}>
                 <SelectTrigger className="bg-white/5 border-white/10 text-white mt-1"><SelectValue /></SelectTrigger>
                 <SelectContent className="bg-slate-800 border-white/10 text-white">
-                  {[{v:'TRIAL',l:'TRIAL'},{v:'BASIC',l:'BASIC — $15.000/mes'},{v:'PRO',l:'PRO — $30.000/mes'},{v:'ENTERPRISE',l:'ENTERPRISE — $75.000/mes'}].map(p =>
+                  {[{v:'TRIAL',l:'TRIAL'},{v:'PRO',l:'PRO — $24.990/mes'},{v:'ENTERPRISE',l:'ENTERPRISE — $75.000/mes'}].map(p =>
                     <SelectItem key={p.v} value={p.v} className="text-white focus:bg-white/10">{p.l}</SelectItem>)}
                 </SelectContent>
               </Select>

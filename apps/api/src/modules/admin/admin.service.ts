@@ -11,9 +11,9 @@ import * as bcrypt from 'bcrypt';
 import { SubStatus } from '@prisma/client';
 
 const PLAN_PRICE: Record<string, number> = {
-  TRIAL: 0,
-  BASIC: 15_000,
-  PRO: 30_000,
+  TRIAL:      0,
+  BASIC:      24_990,
+  PRO:        24_990,
   ENTERPRISE: 75_000,
 };
 

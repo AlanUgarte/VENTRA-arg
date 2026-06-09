@@ -156,7 +156,7 @@ export class EmailService {
     <div class="w">Tu prueba gratuita de <strong>${businessName}</strong> vence en <strong>${daysLeft} día${daysLeft !== 1 ? 's' : ''}</strong>.</div>
     <p class="p" style="margin-top:16px">Para seguir usando el sistema sin interrupciones, elegí tu plan ahora.</p>
     <a href="${this.appUrl}/billing" class="btn">Elegir mi plan →</a>
-    <p class="p" style="font-size:13px">Plan Básico desde <strong>$15.000/mes</strong> · Plan Profesional <strong>$30.000/mes</strong><br>Sin tarjeta requerida para probar.</p>
+    <p class="p" style="font-size:13px">Plan Completo <strong>$24.990/mes</strong> · Todo incluido · Sin tarjeta requerida para probar.</p>
   </div>
   <div class="f">VENTRA ARG · Hecho en Argentina 🇦🇷</div>
 </div></body></html>`;
@@ -207,7 +207,7 @@ export class EmailService {
 
   async sendRenewalReminder(email: string, userName: string, businessName: string, plan: string) {
     const subject = `⏰ Tu suscripción de VENTRA ARG vence en 3 días`;
-    const planName = plan === 'PRO' ? 'Plan Profesional ($30.000/mes)' : 'Plan Básico ($15.000/mes)';
+    const planName = 'Plan Completo ($24.990/mes)';
     const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
 <style>
   body{font-family:'Helvetica Neue',Arial,sans-serif;background:#f5f5f0;margin:0;padding:20px;color:#1a1c1a}

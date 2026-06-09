@@ -17,7 +17,7 @@ const FEATURES = [
 
 const FAQS = [
   { q: '¿Necesito instalar algo?',                          a: 'No. Funciona desde el navegador en cualquier compu, tablet o celular. También en iPhone y Android.' },
-  { q: '¿Puede usarlo más de una persona a la vez?',        a: 'Sí, con el Plan PRO tenés hasta 3 usuarios simultáneos. Cada uno con su usuario y contraseña, con permisos separados.' },
+  { q: '¿Puede usarlo más de una persona a la vez?',        a: 'Sí. El plan incluye 1 dueño y hasta 2 cajeros simultáneos. Cada uno con su usuario, contraseña y permisos separados.' },
   { q: 'Si cambio un precio, ¿se actualiza lo que me deben?', a: 'Exacto. Los fiados se calculan siempre al precio del día.' },
   { q: '¿Cómo es la prueba gratis?',                        a: '7 días con todo habilitado. Sin tarjeta de crédito. Si te sirve, elegís tu plan y pagás.' },
   { q: '¿Cómo se paga?',                                    a: 'Podés pagar con Mercado Pago (cobro automático mensual) o por transferencia bancaria. Con MP se activa al instante.' },
@@ -206,51 +206,34 @@ export default function LandingPage() {
       {/* PRICING */}
       <section id="precio" className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
         <div className="mb-10 text-center">
-          <span className="text-xs font-extrabold uppercase tracking-widest" style={{ color: ACCENT }}>Elegí tu plan</span>
+          <span className="text-xs font-extrabold uppercase tracking-widest" style={{ color: ACCENT }}>Un solo plan</span>
           <h2 className="mt-2 font-serif text-3xl font-bold sm:text-4xl">Simple y sin letra chica</h2>
           <p className="mt-3" style={{ color: '#5d6b5f' }}>7 días gratis · no pedimos tarjeta · cancelás cuando querés</p>
         </div>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 max-w-2xl mx-auto">
-          {/* BASIC */}
-          <div className="rounded-3xl border p-7" style={{ background: '#fff', borderColor: '#e7e0d2' }}>
-            <p className="text-xs font-extrabold uppercase tracking-widest" style={{ color: '#2f6fed' }}>Plan Básico</p>
-            <div className="mt-3 flex items-baseline gap-1">
-              <span className="text-xl font-bold">$</span>
-              <span className="font-serif text-5xl font-black">15.000</span>
-              <span className="text-sm font-semibold" style={{ color: '#5d6b5f' }}>/mes</span>
-            </div>
-            <p className="mt-1.5 text-sm" style={{ color: '#5d6b5f' }}>Para kioscos con 1 dueño</p>
-            <ul className="mt-5 space-y-2.5">
-              {['Punto de venta con ticket','Inventario y stock','Clientes y fiados','Proveedores','Reportes y gráficos','Solo 1 usuario (el dueño)'].map(f => (
-                <li key={f} className="flex items-center gap-2.5 text-sm">
-                  <span className="flex h-4.5 w-4.5 items-center justify-center rounded-full" style={{ background: '#e2f4ec' }}>
-                    <Check size={10} style={{ stroke: '#0a7e57' }} />
-                  </span>
-                  {f}
-                </li>
-              ))}
-            </ul>
-            <Link href="/register" className="mt-6 block rounded-2xl border py-3.5 text-center text-sm font-bold transition-colors hover:bg-gray-50" style={{ borderColor: '#e7e0d2' }}>
-              Empezar prueba gratis
-            </Link>
-          </div>
-
-          {/* PRO */}
+        <div className="max-w-sm mx-auto">
           <div className="relative rounded-3xl p-7 shadow-xl" style={{ background: '#fff', border: '2px solid #0d9f6e', boxShadow: '0 16px 40px rgba(13,159,110,.15)' }}>
             <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-xs font-extrabold text-white" style={{ background: PRIMARY }}>
-              MÁS POPULAR
+              TODO INCLUIDO
             </div>
-            <div className="rounded-2xl p-5 -mx-1 mb-4" style={{ background: 'linear-gradient(135deg,#0d9f6e,#12c98a)' }}>
-              <p className="text-xs font-extrabold uppercase tracking-widest text-white/80">Plan Profesional</p>
+            <div className="rounded-2xl p-5 -mx-1 mb-5" style={{ background: 'linear-gradient(135deg,#0d9f6e,#12c98a)' }}>
+              <p className="text-xs font-extrabold uppercase tracking-widest text-white/80">Plan Completo</p>
               <div className="mt-2 flex items-baseline gap-1">
                 <span className="text-xl font-bold text-white">$</span>
-                <span className="font-serif text-5xl font-black text-white">30.000</span>
+                <span className="font-serif text-5xl font-black text-white">24.990</span>
                 <span className="text-sm font-semibold text-white/80">/mes</span>
               </div>
-              <p className="mt-1 text-sm text-white/90">Para almacenes con empleados</p>
+              <p className="mt-1 text-sm text-white/90">1 dueño + hasta 2 cajeros simultáneos</p>
             </div>
-            <ul className="space-y-2.5">
-              {['Todo del Plan Básico','Hasta 3 usuarios simultáneos','Empleados con acceso restringido','Reportes completos','Ganancia visible solo para el dueño'].map(f => (
+            <ul className="space-y-2.5 mb-6">
+              {[
+                'Punto de venta con ticket y comprobante',
+                'Inventario, stock y control de precios',
+                'Clientes, fiados y cuenta corriente',
+                'Proveedores con múltiples medios de pago',
+                'Reportes, gráficos y respaldos',
+                '1 dueño + hasta 2 cajeros simultáneos',
+                'Ganancia visible solo para el dueño',
+              ].map(f => (
                 <li key={f} className="flex items-center gap-2.5 text-sm">
                   <span className="flex h-4.5 w-4.5 items-center justify-center rounded-full" style={{ background: '#e2f4ec' }}>
                     <Check size={10} style={{ stroke: '#0a7e57' }} />
@@ -259,8 +242,8 @@ export default function LandingPage() {
                 </li>
               ))}
             </ul>
-            <Link href="/register" className="mt-6 block rounded-2xl py-3.5 text-center text-sm font-extrabold text-white shadow-lg" style={{ background: PRIMARY, boxShadow: '0 8px 20px rgba(13,159,110,.3)' }}>
-              Empezar prueba gratis
+            <Link href="/register" className="block rounded-2xl py-3.5 text-center text-sm font-extrabold text-white shadow-lg" style={{ background: PRIMARY, boxShadow: '0 8px 20px rgba(13,159,110,.3)' }}>
+              Empezar prueba gratis — 7 días
             </Link>
           </div>
         </div>

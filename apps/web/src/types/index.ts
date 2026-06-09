@@ -19,7 +19,7 @@ export interface Tenant {
 }
 
 export interface Subscription {
-  plan: 'TRIAL' | 'BASIC' | 'PRO' | 'ENTERPRISE';
+  plan: 'TRIAL' | 'PRO' | 'ENTERPRISE';
   status: 'TRIAL' | 'ACTIVE' | 'PAST_DUE' | 'CANCELLED';
   trialEndsAt: string;
   currentPeriodEnd?: string;

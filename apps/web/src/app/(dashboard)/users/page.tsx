@@ -68,7 +68,7 @@ export default function UsersPage() {
 
   const sub = user?.tenant?.subscription;
   const planLabel = sub?.plan ?? 'TRIAL';
-  const maxUsers = planLabel === 'PRO' ? 3 : planLabel === 'ENTERPRISE' ? 999 : 1;
+  const maxUsers = planLabel === 'ENTERPRISE' ? 999 : planLabel === 'TRIAL' ? 1 : 3;
   const activeUsers = users.filter((u: any) => u.isActive).length;
   const canAdd = activeUsers < maxUsers;
 
@@ -96,18 +96,18 @@ export default function UsersPage() {
                   {activeUsers} de {maxUsers === 999 ? 'ilimitados' : maxUsers} usuarios activos
                 </p>
               </div>
-              {planLabel === 'BASIC' && (
+              {planLabel === 'TRIAL' && (
                 <div className="rounded-xl bg-amber-50 border border-amber-200 px-4 py-2 text-sm text-amber-800">
-                  Plan Básico = 1 usuario. <span className="font-bold">Actualizá a PRO para agregar empleados.</span>
+                  En prueba = 1 usuario. <span className="font-bold">Activá el plan para agregar cajeros.</span>
                 </div>
               )}
-              {canAdd && planLabel !== 'BASIC' && (
+              {canAdd && planLabel !== 'TRIAL' && (
                 <Button onClick={() => setShowNew(true)}>
-                  <UserPlus className="h-4 w-4" /> Agregar empleado
+                  <UserPlus className="h-4 w-4" /> Agregar cajero
                 </Button>
               )}
             </div>
-            {planLabel !== 'BASIC' && (
+            {maxUsers !== 999 && (
               <div className="mt-3 h-2 rounded-full bg-muted overflow-hidden">
                 <div
                   className="h-full rounded-full bg-primary transition-all"
