@@ -32,7 +32,7 @@ class BootstrapDto {
 
 class SetStatusDto {
   @IsIn(['ACTIVE', 'CANCELLED', 'PAST_DUE', 'TRIAL']) status: 'ACTIVE' | 'CANCELLED' | 'PAST_DUE' | 'TRIAL';
-  @IsOptional() @IsIn(['BASIC', 'PRO', 'ENTERPRISE', 'TRIAL']) plan?: 'BASIC' | 'PRO' | 'ENTERPRISE' | 'TRIAL';
+  @IsOptional() @IsIn(['PRO', 'ENTERPRISE', 'TRIAL']) plan?: 'PRO' | 'ENTERPRISE' | 'TRIAL';
   @IsOptional() @IsString() reason?: string;
 }
 

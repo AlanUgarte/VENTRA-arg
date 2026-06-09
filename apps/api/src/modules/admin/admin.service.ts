@@ -191,7 +191,7 @@ export class AdminService {
   async setTenantStatus(
     id: string,
     status: 'ACTIVE' | 'CANCELLED' | 'PAST_DUE' | 'TRIAL',
-    plan?: 'BASIC' | 'PRO' | 'ENTERPRISE' | 'TRIAL',
+    plan?: 'PRO' | 'ENTERPRISE' | 'TRIAL',
     reason?: string,
   ) {
     const tenant = await this.prisma.tenant.findUnique({ where: { id } });

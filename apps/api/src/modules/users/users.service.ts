@@ -42,9 +42,9 @@ export class UsersService {
       where: { tenantId, isActive: true },
     });
     if (currentCount >= maxUsers) {
-      const planName = sub?.plan === 'BASIC' ? 'Básico' : sub?.plan ?? 'actual';
+      const planName = sub?.plan === 'TRIAL' ? 'de prueba' : 'actual';
       throw new ForbiddenException(
-        `Tu plan ${planName} permite máximo ${maxUsers} usuario(s). Actualizá al Plan PRO para agregar empleados.`,
+        `Tu plan ${planName} permite máximo ${maxUsers} usuario(s). Activá el Plan Completo para agregar cajeros.`,
       );
     }
 

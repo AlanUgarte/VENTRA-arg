@@ -106,7 +106,8 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
           qrbox: { width: 320, height: 160 },        // área más grande
           aspectRatio: 2.0,                          // landscape para barcodes
           disableFlip: false,
-          formatsToSupport: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16], // todos los formatos
+          // @ts-expect-error: formatsToSupport is a valid html5-qrcode runtime option, not yet in typedefs
+          formatsToSupport: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],
         },
         (code: string) => handleFound(code),
         undefined,
