@@ -24,7 +24,29 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: 'VENTRA ARG · Sistema POS para kioscos y almacenes',
-  description: 'El sistema de gestión para tu kiosco o almacén · Punto de venta, inventario, clientes y más.',
+  description: 'Gestioná tu kiosco desde cualquier lugar. Punto de venta, inventario, fiados, proveedores y reportes. 7 días gratis, sin tarjeta.',
+  metadataBase: new URL('https://ventra-arg.vercel.app'),
+  openGraph: {
+    title: 'VENTRA ARG · Sistema POS para kioscos',
+    description: 'Punto de venta, inventario, fiados y reportes para tu kiosco. 7 días gratis · $24.990/mes · Todo incluido.',
+    url: 'https://ventra-arg.vercel.app',
+    siteName: 'VENTRA ARG',
+    locale: 'es_AR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'VENTRA ARG · Sistema POS para kioscos',
+    description: 'Punto de venta, inventario, fiados y reportes para tu kiosco. 7 días gratis.',
+  },
+  manifest: '/manifest.json',
+  themeColor: '#0d9f6e',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'VENTRA ARG',
+  },
+  formatDetection: { telephone: false },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

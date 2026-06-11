@@ -220,6 +220,8 @@ export class BillingService {
     const newStatus = STATUS_MAP[result.status] ?? 'PAST_DUE';
     const nextPayment = result.next_payment_date ? new Date(result.next_payment_date) : null;
 
+    const prevSub = await this.prisma.subscription.findUnique({ where: { tenantId }, select: { status: true } });
+
     await this.prisma.subscription.update({
       where: { tenantId },
       data: {
@@ -229,6 +231,27 @@ export class BillingService {
         mpSubscriptionId: preapprovalId,
       },
     });
+
+    // Send activation email only on first transition to ACTIVE
+    if (newStatus === 'ACTIVE' && prevSub?.status !== 'ACTIVE') {
+      const owner = await this.prisma.user.findFirst({
+        where: { tenantId, role: Role.OWNER },
+        select: { email: true, name: true },
+      });
+      const tenant = await this.prisma.tenant.findUnique({
+        where: { id: tenantId },
+        select: { name: true },
+      });
+      if (owner && tenant) {
+        const plan = PLANS[planId];
+        this.email.sendPlanActivated(
+          owner.email,
+          owner.name,
+          tenant.name,
+          plan?.name ?? 'Plan Completo',
+        ).catch(() => {});
+      }
+    }
 
     this.logger.log(`Tenant ${tenantId} → ${newStatus} (plan: ${planId})`);
   }

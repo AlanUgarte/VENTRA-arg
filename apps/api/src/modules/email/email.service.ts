@@ -236,6 +236,56 @@ export class EmailService {
     await this.send(email, subject, html);
   }
 
+  async sendPlanActivated(
+    email: string,
+    userName: string,
+    businessName: string,
+    planName: string,
+  ) {
+    const subject = `✅ Tu Plan Completo en VENTRA ARG está activo`;
+    const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+<style>
+  body{font-family:'Helvetica Neue',Arial,sans-serif;background:#f5f5f0;margin:0;padding:20px;color:#1a1c1a}
+  .c{max-width:560px;margin:0 auto;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+  .h{background:linear-gradient(135deg,#0d9f6e,#10b981);padding:36px 32px;text-align:center;color:#fff}
+  .logo{font-size:28px;font-weight:900;letter-spacing:-.5px}
+  .icon{font-size:48px;margin-bottom:8px;display:block}
+  .b{padding:36px 32px}
+  .t{font-size:22px;font-weight:800;margin-bottom:12px}
+  .p{font-size:15px;color:#5d6b5f;line-height:1.6;margin-bottom:16px}
+  .badge{display:inline-block;background:#e2f4ec;color:#0a7e57;font-weight:700;padding:8px 18px;border-radius:20px;font-size:14px;margin-bottom:24px}
+  .btn{display:block;background:#0d9f6e;color:#fff!important;text-decoration:none;text-align:center;padding:16px 24px;border-radius:14px;font-weight:800;font-size:16px;margin:24px 0}
+  .features{background:#f8faf8;border-radius:14px;padding:20px 24px;margin:20px 0}
+  .feature{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;font-size:14px}
+  .feature:last-child{margin-bottom:0}
+  .check{color:#0d9f6e;font-size:16px;flex-shrink:0;margin-top:1px}
+  .f{border-top:1px solid #e7e0d2;padding:20px 32px;text-align:center;font-size:12px;color:#9aa3b0}
+</style></head>
+<body><div class="c">
+  <div class="h">
+    <span class="icon">✅</span>
+    <div class="logo">VENTRA ARG</div>
+  </div>
+  <div class="b">
+    <p class="t">¡Hola, ${userName}! Tu plan está activo.</p>
+    <div class="badge">✓ ${planName} activado con éxito</div>
+    <p class="p">El pago fue procesado correctamente. Ya tenés acceso completo al sistema para <strong>${businessName}</strong>.</p>
+    <div class="features">
+      <div class="feature"><span class="check">✓</span><span><strong>Punto de venta</strong> con ticket y comprobante</span></div>
+      <div class="feature"><span class="check">✓</span><span><strong>Inventario</strong> y control de stock</span></div>
+      <div class="feature"><span class="check">✓</span><span><strong>Clientes y fiados</strong> actualizados al precio del día</span></div>
+      <div class="feature"><span class="check">✓</span><span><strong>Proveedores</strong> con cuenta corriente</span></div>
+      <div class="feature"><span class="check">✓</span><span><strong>Reportes y gráficos</strong> de facturación y ganancia</span></div>
+      <div class="feature"><span class="check">✓</span><span><strong>1 dueño + hasta 2 cajeros</strong> simultáneos</span></div>
+    </div>
+    <a href="${this.appUrl}/pos" class="btn">Ir al sistema →</a>
+    <p class="p" style="font-size:13px;margin-top:0">Si tenés alguna consulta, respondé este email.</p>
+  </div>
+  <div class="f">VENTRA ARG · Sistema de gestión para kioscos · Hecho en Argentina 🇦🇷<br>Este email fue enviado a ${email}</div>
+</div></body></html>`;
+    await this.send(email, subject, html);
+  }
+
   async sendNewEmployee(
     email: string,
     employeeName: string,

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth.store';
 import { Sidebar } from '@/components/layout/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
+import { OnboardingModal } from '@/components/onboarding/onboarding-modal';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { accessToken } = useAuthStore();
@@ -27,6 +28,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <main className="flex flex-1 flex-col overflow-y-auto min-w-0">
         {children}
       </main>
+      <OnboardingModal />
     </div>
   );
 }
