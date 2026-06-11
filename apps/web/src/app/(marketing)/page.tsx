@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { Check, ChevronDown, TrendingUp } from 'lucide-react';
+import { ScrollDemo } from '@/components/landing/scroll-demo';
 
 const PRIMARY = '#0d9f6e';
 const ACCENT  = '#f0653e';
@@ -145,6 +146,9 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* SCROLL DEMO */}
+      <ScrollDemo />
 
       {/* FEATURES */}
       <section id="funciones" className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
